@@ -2,6 +2,7 @@
 import boto3
 import json
 from datetime import datetime
+from torb import beanstalk_utils as bs
 
 client = boto3.client('stepfunctions', region_name='us-east-1')
 STEP_FUNCTION_ARN = 'arn:aws:states:us-east-1:643366669028:stateMachine:staging_deployment'
@@ -12,7 +13,15 @@ def handler(event, context):
     this is triggered on completed file upload from s3 and
     event will be set to file data.
     '''
-    run_name = "staging_deploy_for_%s" % datetime.now().strftime("%a_%b_%d_%Y__%H%M%S")
+    # determine if we are deploying to fourfront-webprod or fourfront-webprod2
+    event['source_env'] = bs.whodaman().get('EnvironmentName')
+    if event['source_env'] == 'fourfront-webprod':
+        event['dest_env'] = 'fourfront-webprod2'
+    elif event['source_env'] == 'fourfront-webprod2':
+        event['dest_env'] = 'fourfront-webprod'
+
+    run_name = "%s_deploy_for_%s" % (event['dest_env'],
+                                     datetime.now().strftime("%a_%b_%d_%Y__%H%M%S"))
 
     if event.get('run_name'):
         run_name = event.get('run_name')  # used for testing
@@ -31,8 +40,8 @@ def handler(event, context):
 
 def make_input(event):
     data = {
-      "source_env": "fourfront-webprod",
-      "dest_env": "fourfront-staging",
+      "source_env": event['source_env'] or "fourfront-webprod",
+      "dest_env": event['dest_env'] or "fourfront-webprod2",
       "dry_run": False,
       "merge_into": "production",
       "repo_owner": "4dn-dcic",

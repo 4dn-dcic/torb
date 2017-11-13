@@ -117,8 +117,8 @@ def new_lambda(ctx, name, base='create_beanstalk'):
     '''
     create a new lambda by copy from a base one and replacing some core strings.
     '''
-    src_dir = './core/%s' % base
-    dest_dir = './core/%s' % name
+    src_dir = './torb/%s' % base
+    dest_dir = './torb/%s' % name
     mkdir(dest_dir)
     copytree(src=src_dir, dst=dest_dir)
     chdir(dest_dir)
@@ -198,12 +198,12 @@ def deploy(ctx, name, version=None, no_tests=False):
     # dist directores are the enemy, clean the all
     for name in get_all_core_lambdas():
         print("cleaning house before deploying")
-        with chdir("./core/%s" % (name)):
+        with chdir("./torb/%s" % (name)):
             clean(ctx)
 
     for name in names:
         print("=" * 20, "Deploying lambda", name, "=" * 20)
-        with chdir("./core/%s" % (name)):
+        with chdir("./torb/%s" % (name)):
             print("clean up previous builds.")
             clean(ctx)
             print("building lambda package")
@@ -361,7 +361,7 @@ def travis(ctx, branch='production', owner='4dn-dcic', repo_name='fourfront'):
     import logging
     logging.basicConfig()
 
-    from core.travis_deploy.service import handler as travis
+    from torb.travis_deploy.service import handler as travis
     data = {'branch': branch,
             'repo_owner': owner,
             'repo_name': repo_name

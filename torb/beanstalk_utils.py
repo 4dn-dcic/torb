@@ -83,6 +83,22 @@ def is_indexing_finished(bs_url):
     return status, totals
 
 
+def whodaman():
+    '''
+    determines which evironment is currently hosting data.4dnucleome.org
+    '''
+    magic_cname = 'fourfront-webprod.9wzadzju3p.us-east-1.elasticbeanstalk.com'
+
+    import pdb
+    pdb.set_trace()
+    client = boto3.client('elasticbeanstalk')
+    res = client.describe_environments(ApplicationName="4dn-web")
+    for env in res['Environments']:
+        if env.get('CNAME') == magic_cname:
+            # we found data
+            return env
+
+
 def is_beanstalk_ready(env):
     client = boto3.client('elasticbeanstalk')
     res = client.describe_environments(EnvironmentNames=[env])
