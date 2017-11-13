@@ -1,0 +1,3 @@
+{"source_env": "fourfront-webprod",
+	   	"dest_env": "fourfront-staging",
+		"dry_run": true}
