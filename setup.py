@@ -9,8 +9,8 @@ except:
     pass  # don't know why this fails with tox
 
 requires = [
-    'boto3==1.4.2',
-    'botocore==1.4.52',
+    'boto3==1.4.7',
+    'botocore==1.7.30',
     'invoke'
 ]
 
@@ -22,7 +22,7 @@ tests_require = [
 
 setup(
     name='torb',
-    version=open("core/_version.py").readlines()[-1].split()[-1].strip("\"'"),
+    version=open("torb/_version.py").readlines()[-1].split()[-1].strip("\"'"),
     description='Torb is a buildbot that uses lambda and aws step functions to run builds',
     packages=['torb'],
     zip_safe=False,
