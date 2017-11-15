@@ -1,6 +1,6 @@
 region: us-east-1
 
-function_name: trigger_staging_build 
+function_name: trigger_prod_build 
 handler: service.handler
 role: sysadmin 
 description: trigger the process of building an envrionment and staging things 

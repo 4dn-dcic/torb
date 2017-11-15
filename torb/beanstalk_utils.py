@@ -99,6 +99,13 @@ def whodaman():
             return env
 
 
+def beanstalk_info(env):
+    client = boto3.client('elasticbeanstalk')
+    res = client.describe_environments(EnvironmentNames=[env])
+
+    return res['Environments'][0]
+
+
 def is_beanstalk_ready(env):
     client = boto3.client('elasticbeanstalk')
     res = client.describe_environments(EnvironmentNames=[env])
