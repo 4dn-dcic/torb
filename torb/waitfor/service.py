@@ -29,8 +29,11 @@ def handler(event, context):
                 'indexing': bs.is_indexing_finished}
 
     if dry_run:
-        logger.warn("Dry Run - would have called %s : %s with %s" %
-                    (checkers[boto3_type], boto3_type, item_id))
+        try:
+            logger.warn("Dry Run - would have called %s : %s with %s" %
+                        (checkers[boto3_type], boto3_type, item_id))
+        except:
+            logger.warn("Dry Run, but boto3_type not in checkers")
         status = True
         details = "dry_run"
     else:

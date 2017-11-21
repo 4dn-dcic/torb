@@ -391,7 +391,7 @@ def powerup(lambda_name):
         def wrapper(event, context):
             logger.info(context)
             logger.info(event)
-            if event.get('skip', '') != lambda_name:
+            if lambda_name not in event.get('skip', []):
                 log_to_foursight(event, lambda_name)
                 return function(event, context)
             else:

@@ -99,6 +99,12 @@ def whodaman():
             return env
 
 
+def beanstalk_config(env, appname='4dn-web'):
+    client = boto3.client('elasticbeanstalk')
+    return client.describe_configuration_settings(EnvironmentName=env,
+                                                  ApplicationName=appname)
+
+
 def beanstalk_info(env):
     client = boto3.client('elasticbeanstalk')
     res = client.describe_environments(EnvironmentNames=[env])
@@ -234,8 +240,48 @@ def make_envvar_option(name, value):
             }
 
 
-def update_bs_config(envname, template):
+def set_bs_env(envname, var, template=None):
     client = boto3.client('elasticbeanstalk')
+    options = []
+    for key, val in var.iteritems():
+        options.append(make_envvar_option(key, val))
+
+    if template:
+        return client.update_environment(EnvironmentName=envname,
+                                         OptionSettings=options,
+                                         TemplateName=template
+                                         )
+    else:
+        return client.update_environment(EnvironmentName=envname,
+                                         OptionSettings=options)
+
+
+def get_bs_env(envname):
+    pass
+
+    data = client.describe_configuration_settings(EnvironmentName=envname,
+                                                  ApplicationName='4dn-web')
+    options = data['ConfigurationSettings'][0]['OptionSettings']
+    env_vars = [option['Value'] for option in options
+                if option['OptionName'] == 'EnvironmentVariables'][0]
+    return env_vars.split(',')
+
+
+def update_bs_config(envname, template, keep_env_vars=False):
+    client = boto3.client('elasticbeanstalk')
+
+    # get important env variables
+    if keep_env_vars:
+        options = []
+        env_vars = get_bs_env(envname)
+        for var in env_vars:
+            key, value = var.split('=')
+            options.append(make_envvar_option(key, value))
+
+        return client.update_environment(EnvironmentName=envname,
+                                         TemplateName=template,
+                                         OptionSettings=options)
+
     return client.update_environment(EnvironmentName=envname,
                                      TemplateName=template)
 

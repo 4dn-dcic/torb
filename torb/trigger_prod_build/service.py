@@ -48,7 +48,8 @@ def make_input(event):
     data = {
       "source_env": event.get('source_env') or "fourfront-webprod",
       "dest_env": event.get('dest_env') or "fourfront-webprod2",
-      "db_url": event.get('db_url') or '',
+      "env_vars": {"RDS_HOSTNAME": event.get('db_url')},
+      "template": "fourfront-indexing",
       "dry_run": False,
       "repo_owner": "4dn-dcic",
       "repo_name": "fourfront",

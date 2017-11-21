@@ -46,6 +46,10 @@ def get_all_core_lambdas():
             'waitfor',
             'snapshot_rds',
             'create_rds',
+            'set_bs_env',
+            'update_bs_config',
+            'trigger_prod_build',
+            'trigger_staging_build',
             ]
 
 

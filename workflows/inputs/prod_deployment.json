@@ -1,0 +1,19 @@
+{
+  "source_env": "fourfront-hotseat",
+  "dest_env": "fourfront-webprod2",
+  "env_vars": {"RDS_HOSTNAME": "fourfront-hotseat.co3gwj7b7tpq.us-east-1.rds.amazonaws.com"},
+  "template": "fourfront-indexing",
+  "dry_run": false,
+  "repo_owner": "4dn-dcic",
+  "repo_name": "fourfront",
+  "branch": "production",
+  "large_bs": true,
+  "load_prod": true,
+  "index": {"type": "indexing",
+		    "id": "http://fourfront-webprod2.9wzadzju3p.us-east-1.elasticbeanstalk.com",
+			"dry_run": false,
+			"dest_env": "fourfront-webprod2",
+			"src_env": "fourfront-hotseat",
+			"is_src_data": false
+  }
+}
