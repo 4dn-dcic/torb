@@ -257,7 +257,7 @@ def set_bs_env(envname, var, template=None):
 
 
 def get_bs_env(envname):
-    pass
+    client = boto3.client('elasticbeanstalk')
 
     data = client.describe_configuration_settings(EnvironmentName=envname,
                                                   ApplicationName='4dn-web')
@@ -479,6 +479,10 @@ def add_es(new, force_new=False):
     else:
         try:
             resp = es.describe_elasticsearch_domain(DomainName=new)
+            # now kill all the indexes
+            base = 'https://' + resp['DomainStatus']['Endpoint']
+            url = base + '/_all'
+            requests.delete(url)
         except ClientError:  # its not there
             resp = create_new_es(new)
 
