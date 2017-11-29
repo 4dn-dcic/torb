@@ -28,7 +28,7 @@ def handler(event, context):
     dry_run = get_default(event, 'dry_run')
     print("trigger build for %s/%s on branch %s" % (repo_owner, repo_name, branch))
     if dry_run:
-        return
+        return event
 
     # overwrite the before_install section (travis doesn't allow append)
     # by adding the tibanna-deploy env variable, which will trigger the deploy
@@ -64,13 +64,16 @@ def handler(event, context):
 
     url = 'https://api.travis-ci.org/repo/%s%s%s/requests' % (repo_owner, '%2F', repo_name)
 
+    import pdb; pdb.set_trace()
     resp = requests.post(url, headers=headers, data=json.dumps(body))
-
-    try:
-        logger.info(resp)
-        logger.info(resp.text)
+    if resp.ok:
+        logger.info("request response ok")
         logger.info(resp.json())
-    except:
-        pass
-
-    return resp.text
+        travis_req = requests.get(url, headers=headers)
+        build = travis_req.json()['requests'][0]
+        build_id = build['builds'][0]['id']
+        event['type'] = 'travis'
+        event['id'] = build_id
+        return event
+    else:
+        logger.info(resp.text)

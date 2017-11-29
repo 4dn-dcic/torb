@@ -5,7 +5,7 @@ from datetime import datetime
 from torb import beanstalk_utils as bs
 
 client = boto3.client('stepfunctions', region_name='us-east-1')
-STEP_FUNCTION_ARN = 'arn:aws:states:us-east-1:643366669028:stateMachine:test__prod_deployment'
+STEP_FUNCTION_ARN = 'arn:aws:states:us-east-1:643366669028:stateMachine:test__prod_deployment_4'
 
 
 def handler(event, context):
@@ -13,6 +13,8 @@ def handler(event, context):
     this is triggered on completed file upload from s3 and
     event will be set to file data.
     '''
+    if 'dry_run' not in event.keys():
+        event['dry_run'] = False
     # determine if we are deploying to fourfront-webprod or fourfront-webprod2
     event['source_env'] = bs.whodaman().get('EnvironmentName')
     if event['source_env'] == 'fourfront-webprod':
@@ -24,7 +26,7 @@ def handler(event, context):
                                           datetime.now().strftime("%a_%b_%d_%Y__%H%M%S"))
 
     # get db_url from source_env
-    info = bs.beanstalk_info(event['source_env'])
+    info = bs.beanstalk_config(event['source_env'])
     event['db_url'] = [setting['Value'] for setting in
                        info['ConfigurationSettings'][0]['OptionSettings']
                        if setting['OptionName'] == 'RDS_HOSTNAME'][0]
@@ -50,11 +52,17 @@ def make_input(event):
       "dest_env": event.get('dest_env') or "fourfront-webprod2",
       "env_vars": {"RDS_HOSTNAME": event.get('db_url')},
       "template": "fourfront-indexing",
-      "dry_run": False,
+      "dry_run": event.get('dry_run'),
       "repo_owner": "4dn-dcic",
       "repo_name": "fourfront",
       "branch": "production",
       "large_bs": True,
       "load_prod": True,
     }
+    index = {'id': "http://" + bs.beanstalk_info(data['dest_env'])['CNAME'],
+             'type': 'indexing',
+             'dry_run': data['dry_run']
+             }
+    data['index'] = index
+
     return json.dumps(data)

@@ -191,6 +191,30 @@ def create_db_from_snapshot(snapshot_name):
     return response['DBInstance']['DBInstanceArn']
 
 
+def is_travis_finished(build_id):
+    travis_key = os.environ.get('travis_key')
+    status = False
+    details = 'build not done or not found'
+    headers = {'Content-Type': 'application/json',
+               'Accept': 'application/json',
+               'Travis-API-Version': '3',
+               'User-Agent': 'tibanna/0.1.0',
+               'Authorization': 'token %s' % travis_key
+               }
+
+    url = 'https://api.travis-ci.org/build/%s' % build_id
+
+    resp = requests.get(url, headers=headers)
+    state = resp.json()['state']
+    if resp.ok and state == 'failed':
+        raise Exception('Build Failed')
+    elif resp.ok and state == 'passed':
+        status = True
+        details = resp.json()
+
+    return status, details
+
+
 def snapshot_db(db_identifier, snapshot_name):
     client = boto3.client('rds')
     try:
@@ -243,6 +267,18 @@ def make_envvar_option(name, value):
 def set_bs_env(envname, var, template=None):
     client = boto3.client('elasticbeanstalk')
     options = []
+
+    try:
+        # add default environment from existing env
+        # allowing them to be overwritten by var
+        env_vars = get_bs_env(envname)
+        for var in env_vars:
+            k, v = var.split('=')
+            if var.get(k, None) is None:
+                var[k] = v
+    except:
+        pass
+
     for key, val in var.iteritems():
         options.append(make_envvar_option(key, val))
 

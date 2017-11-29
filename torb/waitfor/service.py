@@ -26,7 +26,8 @@ def handler(event, context):
                 'create_rds': bs.is_db_ready,
                 'create_es': bs.is_es_ready,
                 'create_bs': bs.is_beanstalk_ready,
-                'indexing': bs.is_indexing_finished}
+                'indexing': bs.is_indexing_finished,
+                'travis': bs.is_travis_finished}
 
     if dry_run:
         try:

@@ -30,6 +30,31 @@
 			}
 		  }
 		},
+		{
+		  "StartAt": "CreateES",
+		  "States": {
+		  "CreateES": {
+			"Type": "Task",
+			"Resource": "arn:aws:lambda:us-east-1:643366669028:function:create_es",
+			"ResultPath": "$.es",
+			"Next": "WaitForES"
+		   },
+		    "WaitForES": {
+			"Type": "Task",
+			"Resource": "arn:aws:lambda:us-east-1:643366669028:function:waitfor",
+			"InputPath": "$.es",
+			"Retry": [
+			  {
+				"ErrorEquals": ["WaitingForBoto3"],
+				"IntervalSeconds": 30,
+				"MaxAttempts" : 100,
+				"BackoffRate" : 1.0
+			   }
+			],
+			"End": true
+		    }
+		 }
+	   },
 	   {
 	      "StartAt": "TravisBuild",
 		  "States": {
