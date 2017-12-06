@@ -22,8 +22,9 @@ def handler(event, context):
     elif event['source_env'] == 'fourfront-webprod2':
         event['dest_env'] = 'fourfront-webprod'
 
-    run_name = "%s_prod_deploy_for_%s" % (event['dest_env'],
-                                          datetime.now().strftime("%a_%b_%d_%Y__%H%M%S"))
+    start_time = datetime.now().strftime("%a_%b_%d_%Y__%H%M%S")
+    run_name = "%s_prod_deploy_for_%s" % (event['dest_env'], start_time)
+    event['start_time'] = start_time
 
     # get db_url from source_env
     info = bs.beanstalk_config(event['source_env'])
@@ -58,6 +59,10 @@ def make_input(event):
       "branch": "production",
       "large_bs": True,
       "load_prod": True,
+      "_foursight": {
+          "check": "staging/staging_deployment",
+          "log_desc": "Staging Deployment for %s" % event['start_time'],
+       }
     }
     index = {'id': "http://" + bs.beanstalk_info(data['dest_env'])['CNAME'],
              'type': 'indexing',

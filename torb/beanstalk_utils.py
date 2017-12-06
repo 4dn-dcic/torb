@@ -65,8 +65,6 @@ def is_indexing_finished(bs_url):
         bs_url += "/"
     # server not up yet
     try:
-        import pdb
-        pdb.set_trace()
         health_res = requests.get(bs_url + 'counts?format=json')
         totals = health_res.json().get('db_es_total').split()
 
@@ -78,7 +76,8 @@ def is_indexing_finished(bs_url):
             status = False
         else:
             status = True
-    except:
+    except Exception as e:
+        print(e)
         status = False
         totals = 0
 

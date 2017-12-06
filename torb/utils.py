@@ -17,7 +17,7 @@ s3 = boto3.client('s3')
 BASE_ARN = 'arn:aws:states:us-east-1:643366669028:%s:%s'
 WORKFLOW_NAME = 'run_sbg_workflow_5'
 STEP_FUNCTION_ARN = BASE_ARN % ('stateMachine', WORKFLOW_NAME)
-FOURSIGHT_URL = 'https://we0v248yi4.execute-api.us-east-1.amazonaws.com/api/'
+FOURSIGHT_URL = 'https://foursight.4dnucleome.org/api/checks/'
 LOG = logging.getLogger(__name__)
 
 
@@ -369,13 +369,15 @@ def is_prod():
 def log_to_foursight(event, lambda_name):
     fs = event.get('_foursight')
     if fs:
-        data = {'status': "WARNING",
+        data = {'status': "WARN",
                 'description': fs.get('log_desc'),
                 'full_output': '%s started to run' % lambda_name
                 }
+        headers = {'content-type': 'application/json'}
         url = FOURSIGHT_URL + fs.get('check')
-        res = requests.put(url, data=json.dumps(data))
+        res = requests.put(url, data=json.dumps(data), headers=headers)
         print(res.text)
+        return res
 
 
 def powerup(lambda_name):
@@ -392,7 +394,10 @@ def powerup(lambda_name):
             logger.info(context)
             logger.info(event)
             if lambda_name not in event.get('skip', []):
-                log_to_foursight(event, lambda_name)
+                try:
+                    log_to_foursight(event, lambda_name)
+                except:
+                    pass
                 return function(event, context)
             else:
                 logger.info('skiping %s since skip was set in input_json' % lambda_name)
