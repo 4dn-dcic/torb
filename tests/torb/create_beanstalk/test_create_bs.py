@@ -1,4 +1,4 @@
-from torb.create_beanstalk.service import handler as creator
+# from torb.create_beanstalk.service import handler as creator
 import pytest
 
 

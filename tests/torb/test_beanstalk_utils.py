@@ -25,10 +25,13 @@ def waitfor_json():
 
 def test_is_indexing_finished():
     # mastertest url
-    url = 'http://mastertest.4dnucleome.org'
-    res = bs.is_indexing_finished(url)
-    print(res)
-    assert(res)
+    url = 'http://mastertest.elasticbeanstalk.com'
+    status, details = bs.is_indexing_finished(url)
+    if not status:
+        assert(details)  # this is set to zero if there is an error
+
+    # we expect true when indexing is complete
+    assert(status)
 
 
 def test_powerup_logs_to_foursight(waitfor_json):

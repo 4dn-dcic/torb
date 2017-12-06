@@ -65,7 +65,9 @@ def is_indexing_finished(bs_url):
         bs_url += "/"
     # server not up yet
     try:
-        health_res = requests.get(bs_url + 'health?format=json')
+        import pdb
+        pdb.set_trace()
+        health_res = requests.get(bs_url + 'counts?format=json')
         totals = health_res.json().get('db_es_total').split()
 
         # DB: 74048 ES: 74048 parse totals
@@ -282,6 +284,8 @@ def set_bs_env(envname, var, template=None):
     for key, val in var.iteritems():
         options.append(make_envvar_option(key, val))
 
+    logging.info("About to update beanstalk with options as %s" % str(options))
+
     if template:
         return client.update_environment(EnvironmentName=envname,
                                          OptionSettings=options,
@@ -379,7 +383,7 @@ def create_foursight(dest_env, bs_url, es_url):
     if "-" in dest_env:
         dest_env = dest_env.split("-")[1]
 
-    foursight_url = "https://m1kj6dypu3.execute-api.us-east-1.amazonaws.com/api/build_env/"
+    foursight_url = "https://foursight.4dnucleome.org/api/environments/"
     foursight_url = foursight_url + dest_env
     payload = {"fourfront": bs_url,
                "es": es_url,

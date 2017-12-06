@@ -64,16 +64,19 @@ def handler(event, context):
 
     url = 'https://api.travis-ci.org/repo/%s%s%s/requests' % (repo_owner, '%2F', repo_name)
 
-    import pdb; pdb.set_trace()
     resp = requests.post(url, headers=headers, data=json.dumps(body))
     if resp.ok:
         logger.info("request response ok")
         logger.info(resp.json())
         travis_req = requests.get(url, headers=headers)
-        build = travis_req.json()['requests'][0]
-        build_id = build['builds'][0]['id']
-        event['type'] = 'travis'
-        event['id'] = build_id
+        # just check the most recent requests.. should be 0 or 1 usually
+        for i in range(10):
+            build = travis_req.json()['requests'][i]
+            if len(build['builds']) > 0:
+                build_id = build['builds'][0]['id']
+                event['type'] = 'travis'
+                event['id'] = build_id
+                return event
         return event
     else:
         logger.info(resp.text)
