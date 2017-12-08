@@ -16,7 +16,7 @@ def get_default(data, key, default=None):
 
 @powerup('update_bs_config')
 def handler(event, context):
-    template = get_default(event, 'template', 'fourfront-base')
+    template = get_default(event, 'update-template', 'fourfront-base')
     dest_env = get_default(event, 'dest_env')
     dry_run = get_default(event, 'dry_run')
 
@@ -26,4 +26,5 @@ def handler(event, context):
         logger.info(res)
         event['id'] = 'http://' + res['CNAME']
         event['waitfor_details'] = 'http://' + res['CNAME']
+        event['type'] = 'create_bs'
     return event

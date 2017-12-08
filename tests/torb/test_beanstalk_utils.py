@@ -23,6 +23,12 @@ def waitfor_json():
     }
 
 
+def test_get_es_from_health_page():
+    url = 'http://data.4dnucleome.org'
+    res = bs.get_es_from_health_page(url)
+    assert res
+
+
 def test_is_indexing_finished():
     # mastertest url
     url = 'http://mastertest.4dnucleome.org'
@@ -43,3 +49,13 @@ def test_is_indexing_finished():
 
 def test_powerup_logs_to_foursight(waitfor_json):
     assert waitfor(waitfor_json, 1)
+
+
+def test_wait_for_travis():
+    input_json = {
+            "dry_run": False,
+            "id": 312587257,
+            "type": "travis",
+    }
+    print(input_json)
+    return

@@ -53,6 +53,22 @@ def delete_db(db_identifier, take_snapshot=True):
     print(resp)
 
 
+def get_health_page_info(bs_url):
+    if not bs_url.endswith('/'):
+        bs_url += "/"
+    if not bs_url.startswith('http'):
+        bs_url = 'http://' + bs_url
+
+    health_res = requests.get(bs_url + 'health?format=json')
+    return health_res.json()
+
+
+def get_es_from_health_page(bs_url):
+    health = get_health_page_info(bs_url)
+    es = health['elasticsearch'].strip(':80')
+    return es
+
+
 def is_indexing_finished(bs_url):
     # get beanstalk env
     bs = bs_url.split('.')[0].lstrip('http://')
@@ -205,7 +221,9 @@ def is_travis_finished(build_id):
 
     url = 'https://api.travis-ci.org/build/%s' % build_id
 
+    logger.info("url: %s" % url)
     resp = requests.get(url, headers=headers)
+    logger.info(resp.text)
     state = resp.json()['state']
     if resp.ok and state == 'failed':
         raise Exception('Build Failed')
@@ -273,8 +291,8 @@ def set_bs_env(envname, var, template=None):
         # add default environment from existing env
         # allowing them to be overwritten by var
         env_vars = get_bs_env(envname)
-        for var in env_vars:
-            k, v = var.split('=')
+        for evar in env_vars:
+            k, v = evar.split('=')
             if var.get(k, None) is None:
                 var[k] = v
     except:
@@ -361,7 +379,7 @@ def clone_bs_env(old, new, load_prod, db_endpoint, es_url):
                            '--exact', '--nohang'])
 
 
-def create_foursight(dest_env, bs_url, es_url):
+def create_foursight(dest_env, bs_url, es_url, fs_url=None):
     '''
     creates a new environment on foursight to be used for monitoring
     '''
@@ -373,19 +391,22 @@ def create_foursight(dest_env, bs_url, es_url):
         bs_url += "/"
 
     es_url = es_url.rstrip(":80")
-    if not es_url.startswith("https://"):
+    if not es_url.startswith("http"):
         es_url = "https://" + es_url
     if not es_url.endswith("/"):
         es_url += "/"
 
     # environments on foursight don't include fourfront
-    if "-" in dest_env:
-        dest_env = dest_env.split("-")[1]
+    if not fs_url:
+        fs_url = dest_env
+    if "-" in fs_url:
+        fs_url = fs_url.split("-")[1]
 
     foursight_url = "https://foursight.4dnucleome.org/api/environments/"
-    foursight_url = foursight_url + dest_env
+    foursight_url = foursight_url + fs_url
     payload = {"fourfront": bs_url,
                "es": es_url,
+               "ff_env": dest_env,
                }
     logging.info("Hitting up Foursight url %s with payload %s" %
                  (foursight_url, json.dumps(payload)))
@@ -394,7 +415,10 @@ def create_foursight(dest_env, bs_url, es_url):
     res = requests.put(foursight_url,
                        data=json.dumps(payload),
                        headers=headers)
-    return res.text
+    try:
+        return res.json()
+    except:
+        raise Exception(res.text)
 
 
 def create_s3_buckets(new):
