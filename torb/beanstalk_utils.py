@@ -20,10 +20,11 @@ import requests
 from botocore.exceptions import ClientError
 from time import sleep
 
-
 logging.basicConfig()
 logger = logging.getLogger('logger')
 logger.setLevel(logging.INFO)
+
+FOURSIGHT_URL = 'https://foursight.4dnucleome.org/api/checks/'
 
 
 class WaitingForBoto3(Exception):
@@ -377,6 +378,22 @@ def clone_bs_env(old, new, load_prod, db_endpoint, es_url):
     subprocess.check_call(['./eb', 'clone', old, '-n', new,
                            '--envvars', env,
                            '--exact', '--nohang'])
+
+
+def log_to_foursight(event, lambda_name, status='WARN', full_output=None):
+    fs = event.get('_foursight')
+    if not full_output:
+        full_output = '%s started to run' % lambda_name
+    if fs:
+        data = {'status': status,
+                'description': fs.get('log_desc'),
+                'full_output': full_output
+                }
+        headers = {'content-type': 'application/json'}
+        url = FOURSIGHT_URL + fs.get('check')
+        res = requests.put(url, data=json.dumps(data), headers=headers)
+        print(res.text)
+        return res
 
 
 def create_foursight(dest_env, bs_url, es_url, fs_url=None):

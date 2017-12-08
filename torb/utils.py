@@ -7,7 +7,7 @@ from zipfile import ZipFile
 from io import BytesIO
 from uuid import uuid4
 import logging
-import requests
+from torb.beanstalk_utils import log_to_foursight
 
 
 ###########################
@@ -17,7 +17,6 @@ s3 = boto3.client('s3')
 BASE_ARN = 'arn:aws:states:us-east-1:643366669028:%s:%s'
 WORKFLOW_NAME = 'run_sbg_workflow_5'
 STEP_FUNCTION_ARN = BASE_ARN % ('stateMachine', WORKFLOW_NAME)
-FOURSIGHT_URL = 'https://foursight.4dnucleome.org/api/checks/'
 LOG = logging.getLogger(__name__)
 
 
@@ -364,20 +363,6 @@ def current_env():
 
 def is_prod():
     return current_env().lower() == 'prod'
-
-
-def log_to_foursight(event, lambda_name):
-    fs = event.get('_foursight')
-    if fs:
-        data = {'status': "WARN",
-                'description': fs.get('log_desc'),
-                'full_output': '%s started to run' % lambda_name
-                }
-        headers = {'content-type': 'application/json'}
-        url = FOURSIGHT_URL + fs.get('check')
-        res = requests.put(url, data=json.dumps(data), headers=headers)
-        print(res.text)
-        return res
 
 
 def powerup(lambda_name):

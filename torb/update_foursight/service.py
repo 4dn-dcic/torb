@@ -34,6 +34,10 @@ def handler(event, context):
         else:
             foursight_data['bs_url'] = urls['staging']
             foursight_data['fs_url'] = 'staging'
+            # if staging, side effect and update staging_build
+            bs.log_to_foursight(event, '', status="PASS",
+                                full_ouput="Updating foursight")
+
     else:  # get bs url from beanstalk
         bs_info = bs.beanstalk_info(dest_env)
         foursight_data['bs_url'] = bs_info['CNAME']

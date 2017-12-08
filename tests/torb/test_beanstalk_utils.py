@@ -4,6 +4,14 @@ import pytest
 
 
 @pytest.fixture
+def fs_event():
+    return {"_foursight": {"check": "staging/staging_deployment",
+                           "log_desc": "test staging build"
+                           }
+            }
+
+
+@pytest.fixture
 def waitfor_json():
     return {
       "source_env": "fourfront-webprod",
@@ -21,6 +29,12 @@ def waitfor_json():
        }
 
     }
+
+
+def test_foursight_logging(fs_event):
+    res = bs.log_to_foursight(fs_event, "unittest", status='PASS', full_output="this is just a test")
+    assert(res)
+    assert(res.json())
 
 
 def test_get_es_from_health_page():
