@@ -27,10 +27,10 @@ def test_update_fs_with_prod_env(bs_prod_json):
                 }
 
     with mock.patch('torb.update_foursight.service.bs') as mock_bs:
-        mock_bs.whodaman.return_value = 'fourfront-webprod'
+        mock_bs.get_beanstalk_real_url.return_value = expected['bs_url']
         mock_bs.get_es_from_health_page.return_value = 'fake_es_url'
         service.handler(bs_prod_json, 0)
-        mock_bs.whodaman.assert_called_once()
+        mock_bs.get_beanstalk_real_url.assert_called_once()
         mock_bs.get_es_from_health_page.assert_called_once_with(expected['bs_url'])
         mock_bs.create_foursight.assert_called_once_with(**expected)
 
@@ -42,10 +42,10 @@ def test_update_fs_with_staging_env(bs_prod_json):
                 'fs_url': 'staging'
                 }
     with mock.patch('torb.update_foursight.service.bs') as mock_bs:
-        mock_bs.whodaman.return_value = 'fourfront-webprod2'
+        mock_bs.get_beanstalk_real_url.return_value = expected['bs_url']
         mock_bs.get_es_from_health_page.return_value = 'fake_es_url'
         service.handler(bs_prod_json, 0)
-        mock_bs.whodaman.assert_called_once()
+        mock_bs.get_beanstalk_real_url.assert_called_once()
         mock_bs.get_es_from_health_page.assert_called_once_with(expected['bs_url'])
         mock_bs.create_foursight.assert_called_once_with(**expected)
 
@@ -58,9 +58,9 @@ def test_update_fs_with_dev_env(bs_json):
                 }
 
     with mock.patch('torb.update_foursight.service.bs') as mock_bs:
-        mock_bs.beanstalk_info.return_value = {'CNAME': expected['bs_url']}
+        mock_bs.get_beanstalk_real_url.return_value = expected['bs_url']
         mock_bs.get_es_from_health_page.return_value = 'fake_es_url'
         service.handler(bs_json, 0)
-        mock_bs.beanstalk_info.assert_called_once()
+        mock_bs.get_beanstalk_real_url.assert_called_once()
         mock_bs.get_es_from_health_page.assert_called_once_with(expected['bs_url'])
         mock_bs.create_foursight.assert_called_once_with(**expected)

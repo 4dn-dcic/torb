@@ -22,25 +22,14 @@ def handler(event, context):
                       'fs_url': dest_env}
 
     # whats our url
-
-    if 'webprod' in dest_env:
-        urls = {'staging': 'http://staging.4dnucleome.org',
-                'data': 'https://data.4dnucleome.org'}
-        data_env = bs.whodaman()
-
-        if data_env == dest_env:
-            foursight_data['bs_url'] = urls['data']
-            foursight_data['fs_url'] = 'data'
-        else:
-            foursight_data['bs_url'] = urls['staging']
-            foursight_data['fs_url'] = 'staging'
-            # if staging, side effect and update staging_build
-            bs.log_to_foursight(event, '', status="PASS",
-                                full_ouput="Updating foursight")
-
-    else:  # get bs url from beanstalk
-        bs_info = bs.beanstalk_info(dest_env)
-        foursight_data['bs_url'] = bs_info['CNAME']
+    foursight_data['bs_url'] = bs.get_beanstalk_real_url(dest_env)
+    if 'data.4dnucleome.org' in foursight_data['bs_url']:
+        foursight_data['fs_url'] = 'data'
+    elif 'staging.4dnucleome.org' in foursight_data['bs_url']:
+        foursight_data['fs_url'] = 'staging'
+        # if staging, side effect and update staging_build
+        bs.log_to_foursight(event, '', status="PASS",
+                            full_ouput="Updating foursight")
 
     if not dry_run:
         foursight_data['es_url'] = bs.get_es_from_health_page(foursight_data['bs_url'])

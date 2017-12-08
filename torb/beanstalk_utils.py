@@ -130,6 +130,25 @@ def beanstalk_info(env):
     return res['Environments'][0]
 
 
+def get_beanstalk_real_url(env):
+    url = ''
+
+    if 'webprod' in env:
+        urls = {'staging': 'http://staging.4dnucleome.org',
+                'data': 'https://data.4dnucleome.org'}
+        data_env = whodaman()
+
+        if data_env == env:
+            url = urls['data']
+        else:
+            url = urls['staging']
+    else:
+        bs_info = beanstalk_info(env)
+        url = bs_info['CNAME']
+
+    return url
+
+
 def is_beanstalk_ready(env):
     client = boto3.client('elasticbeanstalk')
     res = client.describe_environments(EnvironmentNames=[env])
