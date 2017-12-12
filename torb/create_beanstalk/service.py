@@ -50,6 +50,10 @@ def handler(event, context):
     load_prod = get_default(event, 'load_prod')
     large_instance_beanstalk = get_default(event, 'large_bs')
 
+    # overwrite db_endpoint potentially
+    if ('webprod' in source_env and 'webprod' in dest_env and not db_endpoint):
+        db_endpoint = bs.GOLDEN_DB
+
     retval = {"type": "create_bs",
               "id": dest_env,
               "dry_run": dry_run,

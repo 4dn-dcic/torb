@@ -20,8 +20,9 @@ def handler(event, context):
     elif event['source_env'] == 'fourfront-webprod2':
         event['dest_env'] = 'fourfront-webprod'
 
-    run_name = "%s_deploy_for_%s" % (event['dest_env'],
-                                     datetime.now().strftime("%a_%b_%d_%Y__%H%M%S"))
+    start_time = datetime.now().strftime("%a_%b_%d_%Y__%H%M%S")
+    run_name = "%s_deploy_for_%s" % (event['dest_env'], start_time)
+    event['start_time'] = start_time
 
     if event.get('run_name'):
         run_name = event.get('run_name')  # used for testing

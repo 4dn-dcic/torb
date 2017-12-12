@@ -25,6 +25,7 @@ logger = logging.getLogger('logger')
 logger.setLevel(logging.INFO)
 
 FOURSIGHT_URL = 'https://foursight.4dnucleome.org/api/checks/'
+GOLDEN_DB = "fourfront-webprod.co3gwj7b7tpq.us-east-1.rds.amazonaws.com"
 
 
 class WaitingForBoto3(Exception):
