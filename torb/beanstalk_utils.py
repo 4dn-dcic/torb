@@ -385,9 +385,10 @@ def create_bs(envname, load_prod, db_endpoint, es_url, for_indexing=False):
                                         OptionSettings=options,
                                         )
     except ClientError:
-        # already exists, just retun envmane
-        res = client.describe_environments(EnvironmentNames=[envname])
-        res = res['Environments'][0]
+        # already exists update it
+        res = client.update_environment(EnvironmentName=envname,
+                                        TemplateName=template,
+                                        OptionSettings=options)
     return res
 
 
