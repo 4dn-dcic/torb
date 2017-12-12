@@ -220,7 +220,7 @@ def create_db_from_snapshot(snapshot_name):
     except ClientError:
         # drop target database no backup
         try:
-            delete_db(snapshot_name, False)
+            delete_db(snapshot_name, True)
         except ClientError:
             pass
         return "Deleting"

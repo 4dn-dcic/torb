@@ -49,5 +49,9 @@ def make_input(event):
       "branch": "master",
       "large_bs": True,
       "load_prod": True,
+      "_foursight": {
+          "check": "staging/staging_deployment",
+          "log_desc": "Staging Deployment for %s" % event['start_time'],
+       }
     }
     return json.dumps(data)
