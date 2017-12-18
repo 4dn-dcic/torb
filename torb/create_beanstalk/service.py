@@ -49,10 +49,16 @@ def handler(event, context):
     dry_run = get_default(event, 'dry_run')
     load_prod = get_default(event, 'load_prod')
     large_instance_beanstalk = get_default(event, 'large_bs')
+    fs_url = dest_env
 
     # overwrite db_endpoint potentially
-    if ('webprod' in source_env and 'webprod' in dest_env and not db_endpoint):
-        db_endpoint = bs.GOLDEN_DB
+    if 'webprod' in source_env and 'webprod' in dest_env:
+        if not db_endpoint:
+            db_endpoint = bs.GOLDEN_DB
+        # determine fs_url
+        fs_url = 'staging'
+        if dest_env == bs.whodaman():
+            fs_url = 'data'
 
     retval = {"type": "create_bs",
               "id": dest_env,
@@ -76,7 +82,7 @@ def handler(event, context):
         # we won't always have bs_url
         if bs_url:
             retval['cname'] = bs_url
-            fs_res = bs.create_foursight(dest_env, bs_url, es_url)
+            fs_res = bs.create_foursight(dest_env, bs_url, es_url, fs_url)
             logger.info("create foursight with result = %s " % fs_res)
         else:
             logger.info("No beanstalk endpoint yet, can't create foursight monitoring")

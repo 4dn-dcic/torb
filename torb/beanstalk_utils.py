@@ -27,6 +27,40 @@ logger.setLevel(logging.INFO)
 FOURSIGHT_URL = 'https://foursight.4dnucleome.org/api/checks/'
 GOLDEN_DB = "fourfront-webprod.co3gwj7b7tpq.us-east-1.rds.amazonaws.com"
 
+# TODO: Maybe
+'''
+class EnvConfigData(OrderedDictionary):
+
+    def to_aws_bs_options()
+
+    def get_val_for_env()
+
+    def is_data()
+
+    def is_staging()
+
+    def url()
+
+    def bucket()
+
+    def buckets()
+
+    def part(self, componenet_name):
+        self.get(componenet_name)
+
+    def db(self):
+        return self.part('db')
+
+    def es(self):
+        return self.part('es')
+
+    def foursight(self):
+        return self.part('foursight')
+
+    def higlass(self):
+        return self.part('higlass')
+'''
+
 
 class WaitingForBoto3(Exception):
     pass
@@ -65,6 +99,7 @@ def get_health_page_info(bs_url):
     return health_res.json()
 
 
+# TODO: think about health page query parameter to get direct from config
 def get_es_from_health_page(bs_url):
     health = get_health_page_info(bs_url)
     es = health['elasticsearch'].strip(':80')
@@ -446,8 +481,8 @@ def create_foursight(dest_env, bs_url, es_url, fs_url=None):
                "es": es_url,
                "ff_env": dest_env,
                }
-    logging.info("Hitting up Foursight url %s with payload %s" %
-                 (foursight_url, json.dumps(payload)))
+    logger.info("Hitting up Foursight url %s with payload %s" %
+                (foursight_url, json.dumps(payload)))
 
     headers = {'content-type': "application/json"}
     res = requests.put(foursight_url,
