@@ -29,7 +29,7 @@ def handler(event, context):
         foursight_data['fs_url'] = 'staging'
         # if staging, side effect and update staging_build
         bs.log_to_foursight(event, '', status="PASS",
-                            full_ouput="Updating foursight")
+                            full_output="Updating foursight")
 
     if not dry_run:
         foursight_data['es_url'] = bs.get_es_from_health_page(foursight_data['bs_url'])
