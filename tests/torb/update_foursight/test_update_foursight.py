@@ -1,6 +1,7 @@
 from torb.update_foursight import service
 import pytest
 import mock
+from torb.beanstalk_utils import create_foursight_auto
 
 
 @pytest.fixture
@@ -19,48 +20,57 @@ def bs_json():
     }
 
 
-def test_update_fs_with_prod_env(bs_prod_json):
+@mock.patch('torb.beanstalk_utils.get_beanstalk_real_url', return_value='https://data.4dnucleome.org')
+@mock.patch('torb.beanstalk_utils.get_es_from_health_page', return_value='fake_es_url')
+@mock.patch('torb.beanstalk_utils.create_foursight')
+def test_create_foursight_auto_prod(mock_fs, mock_es, mock_bs, bs_prod_json):
     expected = {'bs_url': 'https://data.4dnucleome.org',
                 'dest_env': 'fourfront-webprod',
                 'es_url': 'fake_es_url',
                 'fs_url': 'data'
                 }
 
-    with mock.patch('torb.update_foursight.service.bs') as mock_bs:
-        mock_bs.get_beanstalk_real_url.return_value = expected['bs_url']
-        mock_bs.get_es_from_health_page.return_value = 'fake_es_url'
-        service.handler(bs_prod_json, 0)
-        mock_bs.get_beanstalk_real_url.assert_called_once()
-        mock_bs.get_es_from_health_page.assert_called_once_with(expected['bs_url'])
-        mock_bs.create_foursight.assert_called_once_with(**expected)
+    create_foursight_auto(bs_prod_json['dest_env'])
+    mock_bs.assert_called_once()
+    mock_es.assert_called_once_with(expected['bs_url'])
+    mock_fs.assert_called_once_with(**expected)
 
 
-def test_update_fs_with_staging_env(bs_prod_json):
+@mock.patch('torb.beanstalk_utils.get_beanstalk_real_url', return_value='http://staging.4dnucleome.org')
+@mock.patch('torb.beanstalk_utils.get_es_from_health_page', return_value='fake_es_url')
+@mock.patch('torb.beanstalk_utils.create_foursight')
+def test_create_foursight_auto_staging_env(mock_fs, mock_es, mock_bs, bs_prod_json):
     expected = {'bs_url': 'http://staging.4dnucleome.org',
                 'dest_env': 'fourfront-webprod',
                 'es_url': 'fake_es_url',
                 'fs_url': 'staging'
                 }
-    with mock.patch('torb.update_foursight.service.bs') as mock_bs:
-        mock_bs.get_beanstalk_real_url.return_value = expected['bs_url']
-        mock_bs.get_es_from_health_page.return_value = 'fake_es_url'
-        service.handler(bs_prod_json, 0)
-        mock_bs.get_beanstalk_real_url.assert_called_once()
-        mock_bs.get_es_from_health_page.assert_called_once_with(expected['bs_url'])
-        mock_bs.create_foursight.assert_called_once_with(**expected)
+
+    create_foursight_auto(bs_prod_json['dest_env'])
+    mock_bs.assert_called_once()
+    mock_es.assert_called_once_with(expected['bs_url'])
+    mock_fs.assert_called_once_with(**expected)
 
 
-def test_update_fs_with_dev_env(bs_json):
+@mock.patch('torb.beanstalk_utils.get_beanstalk_real_url',
+            return_value='fourfront-mastertest.9wzadzju3p.us-east-1.elasticbeanstalk.com')
+@mock.patch('torb.beanstalk_utils.get_es_from_health_page', return_value='fake_es_url')
+@mock.patch('torb.beanstalk_utils.create_foursight')
+def test_create_foursight_auto_with_dev_env(mock_fs, mock_es, mock_bs, bs_json):
     expected = {'bs_url': 'fourfront-mastertest.9wzadzju3p.us-east-1.elasticbeanstalk.com',
                 'dest_env': 'fourfront-mastertest',
                 'es_url': 'fake_es_url',
                 'fs_url': 'fourfront-mastertest'
                 }
 
-    with mock.patch('torb.update_foursight.service.bs') as mock_bs:
-        mock_bs.get_beanstalk_real_url.return_value = expected['bs_url']
-        mock_bs.get_es_from_health_page.return_value = 'fake_es_url'
-        service.handler(bs_json, 0)
-        mock_bs.get_beanstalk_real_url.assert_called_once()
-        mock_bs.get_es_from_health_page.assert_called_once_with(expected['bs_url'])
-        mock_bs.create_foursight.assert_called_once_with(**expected)
+    service.handler(bs_json, 0)
+    mock_bs.assert_called_once()
+    mock_es.assert_called_once_with(expected['bs_url'])
+    mock_fs.assert_called_once_with(**expected)
+
+
+@mock.patch('torb.update_foursight.service.bs.create_foursight_auto')
+def test_update_foursight_calls_auto_staging(mock_create):
+
+    service.handler({'dest_env': 'staging'}, 1)
+    mock_create.assert_called_once_with('staging')

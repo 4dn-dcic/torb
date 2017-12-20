@@ -11,6 +11,7 @@ import shutil
 # from botocore.errorfactory import ExecutionAlreadyExists
 from contextlib import contextmanager
 import aws_lambda
+from torb import beanstalk_utils as bs
 
 docs_dir = 'docs'
 build_dir = os.path.join(docs_dir, '_build')
@@ -372,3 +373,17 @@ def travis(ctx, branch='production', owner='4dn-dcic', repo_name='fourfront'):
             }
     travis(data, None)
     # print("https://travis-ci.org/%s" % res.json()['repository']['slug'])
+
+
+@task
+def swap_cname(ctx, src, dest):
+    print("swapping cnames")
+    bs.swap_cname(src, dest)
+
+    print("giving cnames a second to update..")
+    import time
+    time.sleep(10)
+    print("now updating foursight")
+    # handle switching foursight up as well
+    bs.create_foursight_auto(src)
+    bs.create_foursight_auto(dest)

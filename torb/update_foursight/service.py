@@ -18,23 +18,19 @@ def get_default(data, key, default=None):
 def handler(event, context):
     dest_env = get_default(event, 'dest_env')
     dry_run = get_default(event, 'dry_run')
-    foursight_data = {'dest_env': dest_env,
-                      'fs_url': dest_env}
 
-    # whats our url
-    foursight_data['bs_url'] = bs.get_beanstalk_real_url(dest_env)
-    if 'data.4dnucleome.org' in foursight_data['bs_url']:
-        foursight_data['fs_url'] = 'data'
-    elif 'staging.4dnucleome.org' in foursight_data['bs_url']:
-        foursight_data['fs_url'] = 'staging'
-        # if staging, side effect and update staging_build
-        bs.log_to_foursight(event, '', status="PASS",
-                            full_output="Updating foursight")
+    if dry_run:
+        return event
 
-    if not dry_run:
-        foursight_data['es_url'] = bs.get_es_from_health_page(foursight_data['bs_url'])
-        event['foursight'] = bs.create_foursight(**foursight_data)
-        if event['foursight'].get('initial_checks'):
-            del event['foursight']['initial_checks']
+    foursight = bs.create_foursight_auto(dest_env)
+
+    event['foorsight'] = foursight
+    try:
+        if foursight.get('fs_url') == 'staging':
+            # if staging, side effect and update staging_build
+            bs.log_to_foursight(event, '', status="PASS",
+                                full_output="Updating foursight")
+    except AttributeError:
+        pass
 
     return event

@@ -137,6 +137,14 @@ def is_indexing_finished(bs_url):
     return status, totals
 
 
+def swap_cname(src, dest):
+    # TODO clients should be global functions
+    client = boto3.client('elasticbeanstalk')
+
+    client.swap_environment_cnames(SourceEnvironmentName=src,
+                                   DestinationEnvironmentName=dest)
+
+
 def whodaman():
     '''
     determines which evironment is currently hosting data.4dnucleome.org
@@ -450,6 +458,36 @@ def log_to_foursight(event, lambda_name, status='WARN', full_output=None):
         res = requests.put(url, data=json.dumps(data), headers=headers)
         print(res.text)
         return res
+
+
+def create_foursight_auto(dest_env):
+    fs = {'dest_env': dest_env}
+
+    # import pdb
+    # pdb.set_trace()
+    # whats our url
+    fs['bs_url'] = get_beanstalk_real_url(dest_env)
+    fs['fs_url'] = get_foursight_env(dest_env, fs['bs_url'])
+    fs['es_url'] = get_es_from_health_page(fs['bs_url'])
+    fs['foursight'] = create_foursight(**fs)
+    if fs['foursight'].get('initial_checks'):
+        del fs['foursight']['initial_checks']
+
+    return fs
+
+
+def get_foursight_env(dest_env, bs_url=None):
+
+    if not bs_url:
+        bs_url = get_beanstalk_real_url(dest_env)
+
+    env = dest_env
+    if 'data.4dnucleome.org' in bs_url:
+        env = 'data'
+    elif 'staging.4dnucleome.org' in bs_url:
+        env = 'staging'
+
+    return env
 
 
 def create_foursight(dest_env, bs_url, es_url, fs_url=None):
