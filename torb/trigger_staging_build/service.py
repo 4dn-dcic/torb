@@ -14,7 +14,7 @@ def handler(event, context):
     event will be set to file data.
     '''
     # determine if we are deploying to fourfront-webprod or fourfront-webprod2
-    event['source_env'] = bs.whodaman().get('EnvironmentName')
+    event['source_env'] = bs.whodaman()
     if event['source_env'] == 'fourfront-webprod':
         event['dest_env'] = 'fourfront-webprod2'
     elif event['source_env'] == 'fourfront-webprod2':

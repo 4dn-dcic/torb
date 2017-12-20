@@ -158,7 +158,7 @@ def whodaman():
         logger.warn(env)
         if env.get('CNAME') == magic_cname:
             # we found data
-            return env
+            return env.get('EnvironmentName')
 
 
 def beanstalk_config(env, appname='4dn-web'):
@@ -463,8 +463,6 @@ def log_to_foursight(event, lambda_name, status='WARN', full_output=None):
 def create_foursight_auto(dest_env):
     fs = {'dest_env': dest_env}
 
-    # import pdb
-    # pdb.set_trace()
     # whats our url
     fs['bs_url'] = get_beanstalk_real_url(dest_env)
     fs['fs_url'] = get_foursight_env(dest_env, fs['bs_url'])
