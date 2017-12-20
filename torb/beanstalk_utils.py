@@ -494,7 +494,7 @@ def create_foursight(dest_env, bs_url, es_url, fs_url=None):
     '''
 
     # we want some url like thing
-    if not bs_url.startswith('http://'):
+    if not bs_url.startswith('http'):
         bs_url = 'http://' + bs_url
     if not bs_url.endswith("/"):
         bs_url += "/"
