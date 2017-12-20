@@ -453,7 +453,9 @@ def log_to_foursight(event, lambda_name, status='WARN', full_output=None):
                 'description': fs.get('log_desc'),
                 'full_output': full_output
                 }
-        headers = {'content-type': 'application/json'}
+        ff_auth = os.environ.get('FS_AUTH')
+        headers = {'content-type': "application/json",
+                   'Authorization': ff_auth}
         url = FOURSIGHT_URL + fs.get('check')
         res = requests.put(url, data=json.dumps(data), headers=headers)
         print(res.text)
@@ -511,8 +513,7 @@ def create_foursight(dest_env, bs_url, es_url, fs_url=None):
     if "-" in fs_url:
         fs_url = fs_url.split("-")[1]
 
-    foursight_url = "https://foursight.4dnucleome.org/api/environments/"
-    foursight_url = foursight_url + fs_url
+    foursight_url = FOURSIGHT_URL + fs_url
     payload = {"fourfront": bs_url,
                "es": es_url,
                "ff_env": dest_env,
@@ -520,7 +521,9 @@ def create_foursight(dest_env, bs_url, es_url, fs_url=None):
     logger.info("Hitting up Foursight url %s with payload %s" %
                 (foursight_url, json.dumps(payload)))
 
-    headers = {'content-type': "application/json"}
+    ff_auth = os.environ.get('FS_AUTH')
+    headers = {'content-type': "application/json",
+               'Authorization': ff_auth}
     res = requests.put(foursight_url,
                        data=json.dumps(payload),
                        headers=headers)
