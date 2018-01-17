@@ -380,7 +380,7 @@ def swap_cname(ctx, src, dest):
     print("swapping cnames")
     bs.swap_cname(src, dest)
 
-    print("giving cnames a second to update..")
+    print("giving cnames a few second to update..")
     import time
     time.sleep(10)
     print("now updating foursight")

@@ -143,6 +143,8 @@ def swap_cname(src, dest):
 
     client.swap_environment_cnames(SourceEnvironmentName=src,
                                    DestinationEnvironmentName=dest)
+    client.restart_app_server(EnvironmentName=src)
+    client.restart_app_server(EnvironmentName=dest)
 
 
 def whodaman():
