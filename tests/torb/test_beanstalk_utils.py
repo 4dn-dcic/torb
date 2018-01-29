@@ -45,9 +45,9 @@ def test_get_es_from_health_page():
 
 def test_is_indexing_finished():
     # mastertest url
-    url = 'http://mastertest.4dnucleome.org'
+    env = 'fourfront-mastertest'
     try:
-        status, details = bs.is_indexing_finished(url)
+        status, details = bs.is_indexing_finished(env)
     except bs.WaitingForBoto3 as ex:
         # we get this if the environment is updating
         print(ex)

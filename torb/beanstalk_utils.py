@@ -1,4 +1,3 @@
-#!/usr/bin/python
 '''
 given and env in beanstalk do the follow
 2. backup database
@@ -106,14 +105,16 @@ def get_es_from_health_page(bs_url):
     return es
 
 
-def is_indexing_finished(bs_url):
-    # get beanstalk env
-    bs = bs_url.split('.')[0].lstrip('http://')
-    # some overrides
-    if bs == 'mastertest':
-        bs = 'fourfront-mastertest'
-    is_beanstalk_ready(bs)
+def get_es_from_bs_config(env):
+    bs_env = get_bs_env(env)
+    for item in bs_env:
+        if item.startswith('ES_URL'):
+            return item.split('=')[1].strip(':80')
 
+
+def is_indexing_finished(bs):
+    is_beanstalk_ready(bs)
+    bs_url = get_beanstalk_real_url(bs)
     if not bs_url.endswith('/'):
         bs_url += "/"
     # server not up yet
@@ -143,6 +144,9 @@ def swap_cname(src, dest):
 
     client.swap_environment_cnames(SourceEnvironmentName=src,
                                    DestinationEnvironmentName=dest)
+    import time
+    print("waiting for swap environment cnames")
+    time.sleep(10)
     client.restart_app_server(EnvironmentName=src)
     client.restart_app_server(EnvironmentName=dest)
 
@@ -190,7 +194,7 @@ def get_beanstalk_real_url(env):
             url = urls['staging']
     else:
         bs_info = beanstalk_info(env)
-        url = bs_info['CNAME']
+        url = "http://" + bs_info['CNAME']
 
     return url
 
@@ -470,7 +474,8 @@ def create_foursight_auto(dest_env):
     # whats our url
     fs['bs_url'] = get_beanstalk_real_url(dest_env)
     fs['fs_url'] = get_foursight_env(dest_env, fs['bs_url'])
-    fs['es_url'] = get_es_from_health_page(fs['bs_url'])
+    fs['es_url'] = get_es_from_bs_config(dest_env)
+
     fs['foursight'] = create_foursight(**fs)
     if fs['foursight'].get('initial_checks'):
         del fs['foursight']['initial_checks']

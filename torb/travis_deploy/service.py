@@ -32,6 +32,7 @@ def handler(event, context):
 
     # overwrite the before_install section (travis doesn't allow append)
     # by adding the tibanna-deploy env variable, which will trigger the deploy
+    # TODO: add in snovault check to before_install
     body = {
             "request": {
                 "message": "Your Tibanna triggered build has started.  Have a nice day! :)",

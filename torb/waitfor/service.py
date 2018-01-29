@@ -44,5 +44,5 @@ def handler(event, context):
                               % (str(status), str(details)))
 
     event['waitfor_details'] = details
-    event['id'] = details
+    # event['id'] = details
     return event
