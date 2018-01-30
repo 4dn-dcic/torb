@@ -81,3 +81,4 @@ def handler(event, context):
         return event
     else:
         logger.info(resp.text)
+        raise Exception(resp.text)
