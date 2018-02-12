@@ -462,7 +462,7 @@ def log_to_foursight(event, lambda_name, status='WARN', full_output=None):
         ff_auth = os.environ.get('FS_AUTH')
         headers = {'content-type': "application/json",
                    'Authorization': ff_auth}
-        url = FOURSIGHT_URL + '/checks/' + fs.get('check')
+        url = FOURSIGHT_URL + 'checks/' + fs.get('check')
         res = requests.put(url, data=json.dumps(data), headers=headers)
         print(res.text)
         return res
@@ -520,7 +520,7 @@ def create_foursight(dest_env, bs_url, es_url, fs_url=None):
     if "-" in fs_url:
         fs_url = fs_url.split("-")[1]
 
-    foursight_url = FOURSIGHT_URL + 'environments/' ++ fs_url
+    foursight_url = FOURSIGHT_URL + 'environments/' + fs_url
     payload = {"fourfront": bs_url,
                "es": es_url,
                "ff_env": dest_env,
