@@ -3,7 +3,7 @@ import requests
 import os
 import logging
 import json
-import beanstalk_utils as bs
+from dcicutils import beanstalk_utils as bs
 
 
 logger = logging.getLogger()

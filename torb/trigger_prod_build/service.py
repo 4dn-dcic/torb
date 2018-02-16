@@ -2,7 +2,7 @@
 import boto3
 import json
 from datetime import datetime
-from torb import beanstalk_utils as bs
+from dcicutils import beanstalk_utils as bs
 
 client = boto3.client('stepfunctions', region_name='us-east-1')
 STEP_FUNCTION_ARN = 'arn:aws:states:us-east-1:643366669028:stateMachine:test__prod_deployment_4'
