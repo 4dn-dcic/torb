@@ -11,7 +11,7 @@ import shutil
 # from botocore.errorfactory import ExecutionAlreadyExists
 from contextlib import contextmanager
 import aws_lambda
-from torb import beanstalk_utils as bs
+from dcicutils import beanstalk_utils as bs
 
 docs_dir = 'docs'
 build_dir = os.path.join(docs_dir, '_build')
