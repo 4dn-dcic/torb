@@ -24,7 +24,6 @@ def handler(event, context):
         # create env
         res = bs.update_bs_config(dest_env, template, True)
         logger.info(res)
-        event['id'] = 'http://' + res['CNAME']
         event['waitfor_details'] = 'http://' + res['CNAME']
         event['type'] = 'create_bs'
     return event
