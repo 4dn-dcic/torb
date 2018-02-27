@@ -108,8 +108,8 @@
           {
             "ErrorEquals": ["WaitingForBoto3"],
             "IntervalSeconds": 60,
-            "MaxAttempts" : 400,
-            "BackoffRate" : 1.1
+            "MaxAttempts" : 1000,
+            "BackoffRate" : 1.0
            }
         ],
 	    "Next": "ReconfigureBeanstalk"
