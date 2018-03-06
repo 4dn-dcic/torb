@@ -1,7 +1,7 @@
 from torb.update_foursight import service
 import pytest
 import mock
-from torb.beanstalk_utils import create_foursight_auto
+from dcicutils.beanstalk_utils import create_foursight_auto
 
 
 @pytest.fixture
@@ -20,9 +20,9 @@ def bs_json():
     }
 
 
-@mock.patch('torb.beanstalk_utils.get_beanstalk_real_url', return_value='https://data.4dnucleome.org')
-@mock.patch('torb.beanstalk_utils.get_es_from_bs_config', return_value='fake_es_url')
-@mock.patch('torb.beanstalk_utils.create_foursight')
+@mock.patch('dcicutils.beanstalk_utils.get_beanstalk_real_url', return_value='https://data.4dnucleome.org')
+@mock.patch('dcicutils.beanstalk_utils.get_es_from_bs_config', return_value='fake_es_url')
+@mock.patch('dcicutils.beanstalk_utils.create_foursight')
 def test_create_foursight_auto_prod(mock_fs, mock_es, mock_bs, bs_prod_json):
     expected = {'bs_url': 'https://data.4dnucleome.org',
                 'dest_env': 'fourfront-webprod',
@@ -36,9 +36,9 @@ def test_create_foursight_auto_prod(mock_fs, mock_es, mock_bs, bs_prod_json):
     mock_fs.assert_called_once_with(**expected)
 
 
-@mock.patch('torb.beanstalk_utils.get_beanstalk_real_url', return_value='http://staging.4dnucleome.org')
-@mock.patch('torb.beanstalk_utils.get_es_from_bs_config', return_value='fake_es_url')
-@mock.patch('torb.beanstalk_utils.create_foursight')
+@mock.patch('dcicutils.beanstalk_utils.get_beanstalk_real_url', return_value='http://staging.4dnucleome.org')
+@mock.patch('dcicutils.beanstalk_utils.get_es_from_bs_config', return_value='fake_es_url')
+@mock.patch('dcicutils.beanstalk_utils.create_foursight')
 def test_create_foursight_auto_staging_env(mock_fs, mock_es, mock_bs, bs_prod_json):
     expected = {'bs_url': 'http://staging.4dnucleome.org',
                 'dest_env': 'fourfront-webprod',
@@ -52,10 +52,10 @@ def test_create_foursight_auto_staging_env(mock_fs, mock_es, mock_bs, bs_prod_js
     mock_fs.assert_called_once_with(**expected)
 
 
-@mock.patch('torb.beanstalk_utils.get_beanstalk_real_url',
+@mock.patch('dcicutils.beanstalk_utils.get_beanstalk_real_url',
             return_value='fourfront-mastertest.9wzadzju3p.us-east-1.elasticbeanstalk.com')
-@mock.patch('torb.beanstalk_utils.get_es_from_bs_config', return_value='fake_es_url')
-@mock.patch('torb.beanstalk_utils.create_foursight')
+@mock.patch('dcicutils.beanstalk_utils.get_es_from_bs_config', return_value='fake_es_url')
+@mock.patch('dcicutils.beanstalk_utils.create_foursight')
 def test_create_foursight_auto_with_dev_env(mock_fs, mock_es, mock_bs, bs_json):
     expected = {'bs_url': 'fourfront-mastertest.9wzadzju3p.us-east-1.elasticbeanstalk.com',
                 'dest_env': 'fourfront-mastertest',

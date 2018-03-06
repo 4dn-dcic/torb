@@ -7,7 +7,7 @@ from zipfile import ZipFile
 from io import BytesIO
 from uuid import uuid4
 import logging
-from torb.beanstalk_utils import log_to_foursight
+from dcicutils.beanstalk_utils import log_to_foursight
 
 
 ###########################

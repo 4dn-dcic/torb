@@ -1,4 +1,4 @@
-from torb import beanstalk_utils as bs
+from dcicutils import beanstalk_utils as bs
 from torb.waitfor.service import handler as waitfor
 import pytest
 

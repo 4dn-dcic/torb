@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import logging
-import torb.beanstalk_utils as bs
+from dcicutils import beanstalk_utils as bs
 
 
 logging.basicConfig()
