@@ -24,7 +24,7 @@ def handler(event, context):
 
     foursight = bs.create_foursight_auto(dest_env)
 
-    event['foorsight'] = foursight
+    event['foursight'] = foursight
     try:
         if foursight.get('fs_url') == 'staging':
             # if staging, side effect and update staging_build
