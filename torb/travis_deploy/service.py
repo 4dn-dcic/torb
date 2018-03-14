@@ -13,13 +13,12 @@ SNOVAULT_CHECK_BEFORE_INSTALL_STEPS = [
     'SNO_PATH="snovault = git https://github.com/$USER/$SNO_REPO.git branch="',
     '$(grep "${SNO_PATH}" buildout.cfg | sed "s@$SNO_PATH@@")',
     'SNO_STATUS=$(curl -s "https://api.travis-ci.org/$USER/$SNO_REPO.svg?branch=$SNO_BRANCH" | grep pass)',
-    '|',
-    '  if [ -z "$SNO_STATUS" ]; then',
-    '    echo "Snovault branch build for $SNO_BRANCH is failing; exiting build"',
-    '    travis_terminate',
-    '  else',
-    '    echo "Snovault branch $SNO_BRANCH is okay with build status: $SNO_STATUS"',
-    '  fi'
+    'if [ -z "$SNO_STATUS" ]; then',
+    '  echo "Snovault branch build for $SNO_BRANCH is failing; exiting build"',
+    '  travis_terminate',
+    'else',
+    '  echo "Snovault branch $SNO_BRANCH is okay with build status: $SNO_STATUS"',
+    'fi'
 ]
 
 def get_default(data, key):
