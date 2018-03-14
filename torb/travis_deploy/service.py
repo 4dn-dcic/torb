@@ -10,7 +10,7 @@ logger.setLevel(logging.INFO)
 travis_key = os.environ.get('travis_key')
 
 SNOVAULT_CHECK_BEFORE_INSTALL_STEPS = [
-    'SNO_PATH="snovault = git https://github.com/$USER/$SNO_REPO.git branch="',
+    'SNO_PATH="snovault = git https://github.com/$USER/$SNO_REPO.git branch=',
     '$(grep "${SNO_PATH}" buildout.cfg | sed "s@$SNO_PATH@@")',
     'SNO_STATUS=$(curl -s "https://api.travis-ci.org/$USER/$SNO_REPO.svg?branch=$SNO_BRANCH" | grep pass)',
     'if [ -z "$SNO_STATUS" ]; then',
