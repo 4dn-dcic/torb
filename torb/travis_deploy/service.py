@@ -9,6 +9,18 @@ logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 travis_key = os.environ.get('travis_key')
 
+SNOVAULT_CHECK_BEFORE_INSTALL_STEPS = [
+    'SNO_PATH="snovault = git https://github.com/$USER/$SNO_REPO.git branch="',
+    '$(grep "${SNO_PATH}" buildout.cfg | sed "s@$SNO_PATH@@")',
+    'SNO_STATUS=$(curl -s "https://api.travis-ci.org/$USER/$SNO_REPO.svg?branch=$SNO_BRANCH" | grep pass)',
+    '|',
+    '  if [ -z "$SNO_STATUS" ]; then',
+    '    echo "Snovault branch build for $SNO_BRANCH is failing; exiting build"',
+    '    travis_terminate',
+    '  else',
+    '    echo "Snovault branch $SNO_BRANCH is okay with build status: $SNO_STATUS"',
+    '  fi'
+]
 
 def get_default(data, key):
     return data.get(key, os.environ.get(key, None))
@@ -38,7 +50,7 @@ def handler(event, context):
                 "message": "Your Tibanna triggered build has started.  Have a nice day! :)",
                 "branch": branch,
                 "config": {
-                    "before_install": ["export tibanna_deploy=%s" % (dest_env),
+                    "before_install": SNOVAULT_CHECK_BEFORE_INSTALL_STEPS + ["export tibanna_deploy=%s" % (dest_env),
                                        "echo $tibanna_deploy",
                                        "postgres --version",
                                        "initdb --version",
