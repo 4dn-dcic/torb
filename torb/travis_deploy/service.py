@@ -42,9 +42,12 @@ def handler(event, context):
                                        "echo $tibanna_deploy",
                                        "postgres --version",
                                        "initdb --version",
-                                       "nvm install 4",
+                                       "nvm install 8",
                                        "node --version",
-                                       "npm config set python /usr/bin/python2.7"
+                                       "npm config set python /usr/bin/python2.7",
+                                       "curl -O  ${ES_DOWNLOAD_URL}",
+                                       "sudo dpkg -i --force-confnew elasticsearch-${ES_VERSION}.deb",
+                                       "sudo service elasticsearch stop"
                                        ]
                     }
                 }
