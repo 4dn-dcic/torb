@@ -54,25 +54,25 @@ def handler(event, context):
     # overwrite the before_install section (travis doesn't allow append)
     # by adding the tibanna-deploy env variable, which will trigger the deploy
     body = {
-            "request": {
-                "message": "Tibanna triggered stagging build has started.  Have a nice day! :)",
-                "branch": branch,
-                "config": {
-                    "before_install": SNOVAULT_CHECK_BEFORE_INSTALL_STEPS + [
-                                       "export tibanna_deploy=fourfront-staging",
-                                       "echo $tibanna_deploy",
-                                       "postgres --version",
-                                       "initdb --version",
-                                       "nvm install 8",
-                                       "node --version",
-                                       "npm config set python /usr/bin/python2.7",
-                                       "curl -O  ${ES_DOWNLOAD_URL}",
-                                       "sudo dpkg -i --force-confnew elasticsearch-${ES_VERSION}.deb",
-                                       "sudo service elasticsearch stop"
-                                       ]
-                    }
-                }
+        "request": {
+            "message": "Tibanna triggered stagging build has started.  Have a nice day! :)",
+            "branch": branch,
+            "config": {
+                "before_install": SNOVAULT_CHECK_BEFORE_INSTALL_STEPS + [
+                    "export tibanna_deploy=fourfront-staging",
+                    "echo $tibanna_deploy",
+                    "postgres --version",
+                    "initdb --version",
+                    "nvm install 8",
+                    "node --version",
+                    "npm config set python /usr/bin/python2.7",
+                    "curl -O  ${ES_DOWNLOAD_URL}",
+                    "sudo dpkg -i --force-confnew elasticsearch-${ES_VERSION}.deb",
+                    "sudo service elasticsearch stop"
+                ]
             }
+        }
+    }
 
     headers = {'Content-Type': 'application/json',
                'Accept': 'application/json',

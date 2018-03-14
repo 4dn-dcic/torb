@@ -21,6 +21,7 @@ SNOVAULT_CHECK_BEFORE_INSTALL_STEPS = [
     'fi'
 ]
 
+
 def get_default(data, key):
     return data.get(key, os.environ.get(key, None))
 
@@ -45,24 +46,25 @@ def handler(event, context):
     # by adding the tibanna-deploy env variable, which will trigger the deploy
     # TODO: add in snovault check to before_install
     body = {
-            "request": {
-                "message": "Your Tibanna triggered build has started.  Have a nice day! :)",
-                "branch": branch,
-                "config": {
-                    "before_install": SNOVAULT_CHECK_BEFORE_INSTALL_STEPS + ["export tibanna_deploy=%s" % (dest_env),
-                                       "echo $tibanna_deploy",
-                                       "postgres --version",
-                                       "initdb --version",
-                                       "nvm install 8",
-                                       "node --version",
-                                       "npm config set python /usr/bin/python2.7",
-                                       "curl -O  ${ES_DOWNLOAD_URL}",
-                                       "sudo dpkg -i --force-confnew elasticsearch-${ES_VERSION}.deb",
-                                       "sudo service elasticsearch stop"
-                                       ]
-                    }
-                }
+        "request": {
+            "message": "Your Tibanna triggered build has started.  Have a nice day! :)",
+            "branch": branch,
+            "config": {
+                "before_install": SNOVAULT_CHECK_BEFORE_INSTALL_STEPS + [
+                    "export tibanna_deploy=%s" % (dest_env),
+                    "echo $tibanna_deploy",
+                    "postgres --version",
+                    "initdb --version",
+                    "nvm install 8",
+                    "node --version",
+                    "npm config set python /usr/bin/python2.7",
+                    "curl -O  ${ES_DOWNLOAD_URL}",
+                    "sudo dpkg -i --force-confnew elasticsearch-${ES_VERSION}.deb",
+                    "sudo service elasticsearch stop"
+                ]
             }
+        }
+    }
 
     # if merge into, merge branch into merge_into branch and deploy merge_into branch
     if merge_into:
