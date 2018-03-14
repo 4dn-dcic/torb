@@ -65,7 +65,7 @@ def handler(event, context):
                                        "node --version",
                                        "npm config set python /usr/bin/python2.7",
                                        "curl -O  ${ES_DOWNLOAD_URL}",
-                                       " sudo dpkg -i --force-confnew elasticsearch-${ES_VERSION}.deb",
+                                       "sudo dpkg -i --force-confnew elasticsearch-${ES_VERSION}.deb",
                                        "sudo service elasticsearch stop"
                                        ]
                     }
