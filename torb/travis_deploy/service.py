@@ -45,7 +45,8 @@ def handler(event, context):
                                        "nvm install 8",
                                        "node --version",
                                        "npm config set python /usr/bin/python2.7",
-                                       "curl -O  ${ES_DOWNLOAD_URL} && sudo dpkg -i --force-confnew elasticsearch-${ES_VERSION}.deb && sudo service elasticsearch stop"
+                                       "curl -O  ${ES_DOWNLOAD_URL} && sudo dpkg -i --force-confnew elasticsearch-${ES_VERSION}.deb",
+                                       "sudo service elasticsearch stop"
                                        ]
                     }
                 }
