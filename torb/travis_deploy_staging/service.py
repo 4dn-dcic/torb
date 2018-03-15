@@ -58,7 +58,8 @@ def handler(event, context):
             "message": "Tibanna triggered stagging build has started.  Have a nice day! :)",
             "branch": branch,
             "config": {
-                "before_install": ["export tibanna_deploy=fourfront-staging"] + get_travis_config(branch=branch, repo=repo_name, gh_user=repo_owner).get('before_install', [])
+                "before_install": ["export tibanna_deploy=fourfront-staging"] + \
+                get_travis_config(branch=branch, repo=repo_name, gh_user=repo_owner).get('before_install', [])
             }
         }
     }

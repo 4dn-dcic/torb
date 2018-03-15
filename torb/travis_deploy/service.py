@@ -42,7 +42,8 @@ def handler(event, context):
             "message": "Your Tibanna triggered build has started.  Have a nice day! :)",
             "branch": branch,
             "config": {
-                "before_install": ["export tibanna_deploy=%s" % (dest_env)] + get_travis_config(branch=branch, repo=repo_name, gh_user=repo_owner).get('before_install', [])
+                "before_install": ["export tibanna_deploy=%s" % (dest_env)] + \
+                get_travis_config(branch=branch,repo=repo_name, gh_user=repo_owner).get('before_install', [])
             }
         }
     }
