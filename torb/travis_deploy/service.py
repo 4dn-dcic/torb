@@ -43,7 +43,7 @@ def handler(event, context):
             "branch": branch,
             "config": {
                 "before_install": ["export tibanna_deploy=%s" % (dest_env)] +
-                    get_travis_config(branch, repo_name, repo_owner).get('before_install', [])
+                get_travis_config(branch, repo_name, repo_owner).get('before_install', [])
             }
         }
     }
