@@ -3,23 +3,15 @@ import requests
 import os
 import logging
 import json
-from torb.utils import powerup
+from torb.utils import (
+    powerup,
+    get_travis_config
+)
+
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 travis_key = os.environ.get('travis_key')
-
-SNOVAULT_CHECK_BEFORE_INSTALL_STEPS = [
-    'SNO_PATH="snovault = git https://github.com/$USER/$SNO_REPO.git branch=',
-    '$(grep "${SNO_PATH}" buildout.cfg | sed "s@$SNO_PATH@@")',
-    'SNO_STATUS=$(curl -s "https://api.travis-ci.org/$USER/$SNO_REPO.svg?branch=$SNO_BRANCH" | grep pass)',
-    'if [ -z "$SNO_STATUS" ]; then',
-    '  echo "Snovault branch build for $SNO_BRANCH is failing; exiting build"',
-    '  travis_terminate',
-    'else',
-    '  echo "Snovault branch $SNO_BRANCH is okay with build status: $SNO_STATUS"',
-    'fi'
-]
 
 
 def get_default(data, key):
@@ -50,18 +42,8 @@ def handler(event, context):
             "message": "Your Tibanna triggered build has started.  Have a nice day! :)",
             "branch": branch,
             "config": {
-                "before_install": SNOVAULT_CHECK_BEFORE_INSTALL_STEPS + [
-                    "export tibanna_deploy=%s" % (dest_env),
-                    "echo $tibanna_deploy",
-                    "postgres --version",
-                    "initdb --version",
-                    "nvm install 8",
-                    "node --version",
-                    "npm config set python /usr/bin/python2.7",
-                    "curl -O  ${ES_DOWNLOAD_URL}",
-                    "sudo dpkg -i --force-confnew elasticsearch-${ES_VERSION}.deb",
-                    "sudo service elasticsearch stop"
-                ]
+                "before_install": ["export tibanna_deploy=%s" % (dest_env)] +
+                get_travis_config(branch, repo_name, repo_owner).get('before_install', [])
             }
         }
     }

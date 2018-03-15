@@ -4,7 +4,7 @@ import os
 import logging
 import json
 from dcicutils import beanstalk_utils as bs
-from torb.travis_deploy.service import SNOVAULT_CHECK_BEFORE_INSTALL_STEPS
+from torb.utils import get_travis_config
 
 
 logger = logging.getLogger()
@@ -58,18 +58,8 @@ def handler(event, context):
             "message": "Tibanna triggered stagging build has started.  Have a nice day! :)",
             "branch": branch,
             "config": {
-                "before_install": SNOVAULT_CHECK_BEFORE_INSTALL_STEPS + [
-                    "export tibanna_deploy=fourfront-staging",
-                    "echo $tibanna_deploy",
-                    "postgres --version",
-                    "initdb --version",
-                    "nvm install 8",
-                    "node --version",
-                    "npm config set python /usr/bin/python2.7",
-                    "curl -O  ${ES_DOWNLOAD_URL}",
-                    "sudo dpkg -i --force-confnew elasticsearch-${ES_VERSION}.deb",
-                    "sudo service elasticsearch stop"
-                ]
+                "before_install": ["export tibanna_deploy=fourfront-staging"] +
+                get_travis_config(branch, repo_name, repo_owner).get('before_install', [])
             }
         }
     }
