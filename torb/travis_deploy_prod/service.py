@@ -29,8 +29,8 @@ def handler(event, context):
             "message": "Tibanna triggered build to webprod has started.  Have a nice day! :)",
             "branch": branch,
             "config": {
-                "before_install": ["export tibanna_deploy=fourfront-webprod"] + \
-                get_travis_config(branch=branch, repo=repo_name, gh_user=repo_owner).get('before_install', [])
+                "before_install": ["export tibanna_deploy=fourfront-webprod"] +
+                    get_travis_config(branch, repo_name, repo_owner).get('before_install', [])
             }
         }
     }
