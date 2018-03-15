@@ -3,6 +3,8 @@ import json
 import boto3
 import os
 import mimetypes
+import requests
+import yaml
 from zipfile import ZipFile
 from io import BytesIO
 from uuid import uuid4
@@ -18,7 +20,10 @@ BASE_ARN = 'arn:aws:states:us-east-1:643366669028:%s:%s'
 WORKFLOW_NAME = 'run_sbg_workflow_5'
 STEP_FUNCTION_ARN = BASE_ARN % ('stateMachine', WORKFLOW_NAME)
 LOG = logging.getLogger(__name__)
+FOURFRONT_TRAVIS_YML_URL = 'https://raw.githubusercontent.com/4dn-dcic/fourfront/master/.travis.yml'
 
+def get_travis_config(uri = FOURFRONT_TRAVIS_YML_URL):
+    return yaml.load(requests.get(uri).content)
 
 def ensure_list(val):
     if isinstance(val, (list, tuple)):

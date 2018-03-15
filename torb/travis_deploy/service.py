@@ -3,7 +3,11 @@ import requests
 import os
 import logging
 import json
-from torb.utils import powerup
+from torb.utils import (
+    powerup,
+    get_travis_config
+)
+
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -50,18 +54,7 @@ def handler(event, context):
             "message": "Your Tibanna triggered build has started.  Have a nice day! :)",
             "branch": branch,
             "config": {
-                "before_install": SNOVAULT_CHECK_BEFORE_INSTALL_STEPS + [
-                    "export tibanna_deploy=%s" % (dest_env),
-                    "echo $tibanna_deploy",
-                    "postgres --version",
-                    "initdb --version",
-                    "nvm install 8",
-                    "node --version",
-                    "npm config set python /usr/bin/python2.7",
-                    "curl -O  ${ES_DOWNLOAD_URL}",
-                    "sudo dpkg -i --force-confnew elasticsearch-${ES_VERSION}.deb",
-                    "sudo service elasticsearch stop"
-                ]
+                "before_install": ["export tibanna_deploy=%s" % (dest_env)] + get_travis_config().get('before_install', [])
             }
         }
     }

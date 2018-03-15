@@ -1,6 +1,7 @@
 boto3
 botocore
 requests
+pyyaml
 -e git+https://github.com/j1z0/python-lambda.git#egg=python_lambda
 
 # Build tasks
