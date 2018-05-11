@@ -55,7 +55,7 @@ def handler(event, context):
     # by adding the tibanna-deploy env variable, which will trigger the deploy
     body = {
         "request": {
-            "message": "Tibanna triggered stagging build has started.  Have a nice day! :)",
+            "message": "Torb triggered stagging build has started.  Have a nice day! :)",
             "branch": branch,
             "config": {
                 "before_install": ["export tibanna_deploy=fourfront-staging"] +

@@ -26,7 +26,7 @@ def handler(event, context):
     # by adding the tibanna-deploy env variable, which will trigger the deploy
     body = {
         "request": {
-            "message": "Tibanna triggered build to webprod has started.  Have a nice day! :)",
+            "message": "Torb triggered build to webprod has started.  Have a nice day! :)",
             "branch": branch,
             "config": {
                 "before_install": ["export tibanna_deploy=fourfront-webprod"] +
