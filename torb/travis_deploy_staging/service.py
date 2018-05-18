@@ -4,6 +4,7 @@ import os
 import logging
 import json
 from dcicutils import beanstalk_utils as bs
+from torb.utils import get_travis_config
 
 
 logger = logging.getLogger()
@@ -53,21 +54,15 @@ def handler(event, context):
     # overwrite the before_install section (travis doesn't allow append)
     # by adding the tibanna-deploy env variable, which will trigger the deploy
     body = {
-            "request": {
-                "message": "Tibanna triggered stagging build has started.  Have a nice day! :)",
-                "branch": branch,
-                "config": {
-                    "before_install": ["export tibanna_deploy=fourfront-staging",
-                                       "echo $tibanna_deploy",
-                                       "postgres --version",
-                                       "initdb --version",
-                                       "nvm install 4",
-                                       "node --version",
-                                       "npm config set python /usr/bin/python2.7"
-                                       ]
-                    }
-                }
+        "request": {
+            "message": "Tibanna triggered stagging build has started.  Have a nice day! :)",
+            "branch": branch,
+            "config": {
+                "before_install": ["export tibanna_deploy=fourfront-staging"] +
+                get_travis_config(branch, repo_name, repo_owner).get('before_install', [])
             }
+        }
+    }
 
     headers = {'Content-Type': 'application/json',
                'Accept': 'application/json',

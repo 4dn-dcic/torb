@@ -3,7 +3,11 @@ import requests
 import os
 import logging
 import json
-from torb.utils import powerup
+from torb.utils import (
+    powerup,
+    get_travis_config
+)
+
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -34,21 +38,15 @@ def handler(event, context):
     # by adding the tibanna-deploy env variable, which will trigger the deploy
     # TODO: add in snovault check to before_install
     body = {
-            "request": {
-                "message": "Your Tibanna triggered build has started.  Have a nice day! :)",
-                "branch": branch,
-                "config": {
-                    "before_install": ["export tibanna_deploy=%s" % (dest_env),
-                                       "echo $tibanna_deploy",
-                                       "postgres --version",
-                                       "initdb --version",
-                                       "nvm install 4",
-                                       "node --version",
-                                       "npm config set python /usr/bin/python2.7"
-                                       ]
-                    }
-                }
+        "request": {
+            "message": "Your Tibanna triggered build has started.  Have a nice day! :)",
+            "branch": branch,
+            "config": {
+                "before_install": ["export tibanna_deploy=%s" % (dest_env)] +
+                get_travis_config(branch, repo_name, repo_owner).get('before_install', [])
             }
+        }
+    }
 
     # if merge into, merge branch into merge_into branch and deploy merge_into branch
     if merge_into:
