@@ -1,13 +1,6 @@
 from __future__ import print_function
-import json
-import boto3
-import os
-import mimetypes
 import requests
 import yaml
-from zipfile import ZipFile
-from io import BytesIO
-from uuid import uuid4
 import logging
 from dcicutils.beanstalk_utils import log_to_foursight
 
