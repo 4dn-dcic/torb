@@ -1,12 +1,11 @@
 boto3
 botocore
+-e git+https://github.com/j1z0/python-lambda.git#egg=python_lambda
 requests
 pyyaml
--e git+https://github.com/j1z0/python-lambda.git#egg=python_lambda
 
 # Build tasks
 invoke==0.18.1
-
 
 # Syntax checking
 flake8==2.4.1
