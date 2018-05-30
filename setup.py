@@ -11,7 +11,8 @@ except:
 requires = [
     'boto3==1.4.7',
     'botocore==1.7.30',
-    'invoke'
+    'invoke',
+    'dcicutils>=0.2.3'
 ]
 
 tests_require = [
