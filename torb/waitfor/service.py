@@ -43,5 +43,10 @@ def handler(event, context):
         raise WaitingForBoto3("not ready yet, status: %s, details: %s"
                               % (str(status), str(details)))
 
+    # add version if we are waiting for beanstalk being ready
+    if boto3_type == 'create_bs':
+        info = bs.beanstalk_info(item_id)
+        event['bs_version'] = info['VersionLabel']
+
     event['waitfor_details'] = details
     return event
