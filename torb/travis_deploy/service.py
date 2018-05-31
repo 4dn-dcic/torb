@@ -39,7 +39,7 @@ def handler(event, context):
     # TODO: add in snovault check to before_install
     body = {
         "request": {
-            "message": "Your Tibanna triggered build has started.  Have a nice day! :)",
+            "message": "Your Torb triggered build has started.  Have a nice day! :)",
             "branch": branch,
             "config": {
                 "before_install": ["export tibanna_deploy=%s" % (dest_env)] +

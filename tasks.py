@@ -39,7 +39,6 @@ def setenv(**kwargs):
 
 def get_all_core_lambdas():
     return [
-            'tibanna_slackbot',
             'travis_deploy_prod',
             'travis_deploy',
             'create_es',
