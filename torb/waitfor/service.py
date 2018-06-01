@@ -38,13 +38,20 @@ def handler(event, context):
         status = True
         details = "dry_run"
     else:
-        status, details = checkers[boto3_type](item_id)
+        if boto3_type == 'indexing':
+            if event.get('bs_version'):
+                status, details = checkers[boto3_type](item_id, event.get('bs_version'))
+            else:
+                status, details = checkers[boto3_type](item_id)
+        else:
+            status, details = checkers[boto3_type](item_id)
+
     if not status:
         raise WaitingForBoto3("not ready yet, status: %s, details: %s"
                               % (str(status), str(details)))
 
     # add version if we are waiting for beanstalk being ready
-    if boto3_type == 'create_bs':
+    if boto3_type == 'create_bs' and 'bs_version' not in event and not dry_run:
         info = bs.beanstalk_info(item_id)
         event['bs_version'] = info['VersionLabel']
 
