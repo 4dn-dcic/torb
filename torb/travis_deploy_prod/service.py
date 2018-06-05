@@ -3,7 +3,7 @@ import requests
 import os
 import logging
 import json
-from torb.utils import get_travis_config
+from torb.utils import get_travis_config, kick_travis_build
 
 
 logger = logging.getLogger()
@@ -20,35 +20,6 @@ def handler(event, context):
     branch = get_default(event, 'branch')
     repo_owner = get_default(event, 'repo_owner')
     repo_name = get_default(event, 'repo_name')
-    print("trigger build for %s/%s on branch %s" % (repo_owner, repo_name, branch))
 
-    # overwrite the before_install section (travis doesn't allow append)
-    # by adding the tibanna-deploy env variable, which will trigger the deploy
-    body = {
-        "request": {
-            "message": "Torb triggered build to webprod has started.  Have a nice day! :)",
-            "branch": branch,
-            "config": {
-                "before_install": ["export tibanna_deploy=fourfront-webprod"] +
-                get_travis_config(branch, repo_name, repo_owner).get('before_install', [])
-            }
-        }
-    }
-
-    headers = {'Content-Type': 'application/json',
-               'Accept': 'application/json',
-               'Travis-API-Version': '3',
-               'User-Agent': 'tibanna/0.1.0',
-               'Authorization': 'token %s' % travis_key
-               }
-
-    url = 'https://api.travis-ci.org/repo/%s%s%s/requests' % (repo_owner, '%2F', repo_name)
-
-    resp = requests.post(url, headers=headers, data=json.dumps(body))
-
-    try:
-        logger.info(resp)
-        logger.info(resp.text)
-        logger.info(resp.json())
-    except:
-        pass
+    kick_travis_build(branch, repo_owner, repo_name, 'fourfront-webprod', travis_key)
+    return {"Status": "OK"}
