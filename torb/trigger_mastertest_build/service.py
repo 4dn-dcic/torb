@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
+import logging
 from torb.utils import kick_travis_build
 
 
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 travis_key = os.environ.get('travis_key')
 
 
@@ -16,5 +19,5 @@ def handler(event, context):
     repo_owner = get_default(event, 'repo_owner')
     repo_name = get_default(event, 'repo_name')
 
-    kick_travis_build(branch, repo_owner, repo_name, 'fourfront-webprod', travis_key)
+    kick_travis_build(branch, repo_owner, repo_name, 'fourfront-mastertest', travis_key)
     return {"Status": "OK"}
