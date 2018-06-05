@@ -31,10 +31,10 @@ def kick_travis_build(branch, repo_owner, repo_name, env, travis_key=None):
     # by adding the tibanna-deploy env variable, which will trigger the deploy
     body = {
         "request": {
-            "message": "Torb triggered build to webprod has started.  Have a nice day! :)",
+            "message": "Torb triggered build to " + env + " has started.  Have a nice day! :)",
             "branch": branch,
             "config": {
-                "before_install": ["export tibanna_deploy=fourfront-webprod"] +
+                "before_install": ["export tibanna_deploy=" + env] +
                 get_travis_config(branch, repo_name, repo_owner).get('before_install', [])
             }
         }
