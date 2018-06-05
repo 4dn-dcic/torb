@@ -5,7 +5,7 @@ from datetime import datetime
 from dcicutils import beanstalk_utils as bs
 
 client = boto3.client('stepfunctions', region_name='us-east-1')
-STEP_FUNCTION_ARN = 'arn:aws:states:us-east-1:643366669028:stateMachine:stag_deploy1'
+STEP_FUNCTION_ARN = 'arn:aws:states:us-east-1:643366669028:stateMachine:ff_deploy_staging'
 
 
 def handler(event, context):
