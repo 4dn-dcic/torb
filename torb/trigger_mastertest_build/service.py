@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-import requests
 import os
 import logging
-import json
-from torb.utils import get_travis_config, kick_travis_build
+from torb.utils import kick_travis_build
 
 
 logger = logging.getLogger()
