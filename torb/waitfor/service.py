@@ -41,6 +41,8 @@ def handler(event, context):
         if boto3_type == 'indexing':
             if event.get('bs_version'):
                 status, details = checkers[boto3_type](item_id, event.get('bs_version'))
+            elif event.get('beanstalk', {}).get('bs_version'):
+                status, details = checkers[boto3_type](item_id, event['bs_version']['bs_version'])
             else:
                 status, details = checkers[boto3_type](item_id)
         else:
@@ -51,6 +53,7 @@ def handler(event, context):
                               % (str(status), str(details)))
 
     # add version if we are waiting for beanstalk being ready
+    # with ff_staging_deploy workflow this will actually add to event['beanstalk']['bs_version']
     if boto3_type == 'create_bs' and 'bs_version' not in event and not dry_run:
         info = bs.beanstalk_info(item_id)
         event['bs_version'] = info['VersionLabel']
