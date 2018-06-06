@@ -42,7 +42,7 @@ def handler(event, context):
             if event.get('bs_version'):
                 status, details = checkers[boto3_type](item_id, event.get('bs_version'))
             elif event.get('beanstalk', {}).get('bs_version'):
-                status, details = checkers[boto3_type](item_id, event['bs_version']['bs_version'])
+                status, details = checkers[boto3_type](item_id, event['beanstalk']['bs_version'])
             else:
                 status, details = checkers[boto3_type](item_id)
         else:
