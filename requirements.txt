@@ -1,6 +1,7 @@
+dcicutils>=0.2.3
 boto3
 botocore
--e git+https://github.com/j1z0/python-lambda.git#egg=python_lambda
+-e git+https://github.com/4dn-dcic/python-lambda.git#egg=python_lambda
 requests
 pyyaml
 
@@ -14,4 +15,3 @@ mock
 pip==9.0.1
 pytest==3.0.5
 pytest-cov==2.3.1
-dcicutils>=0.2.3
