@@ -11,6 +11,7 @@ from torb.utils import (
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+# authentication issues are related to account-based travis authentication
 # travis_key is access key: https://docs.travis-ci.com/user/triggering-builds
 travis_key = os.environ.get('travis_key')
 
