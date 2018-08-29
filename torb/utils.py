@@ -22,6 +22,11 @@ def get_travis_config(branch='master', repo='fourfront', gh_user='4dn-dcic', fil
 
 
 def kick_travis_build(branch, repo_owner, repo_name, env, travis_key=None):
+    """
+    if getting permission errors, it is likely due to an outdated travis
+    access key. For more information and instructions on how to generate one,
+    see: https://docs.travis-ci.com/user/triggering-builds
+    """
     print("trigger build for %s/%s on branch %s" % (repo_owner, repo_name, branch))
 
     if travis_key is None:

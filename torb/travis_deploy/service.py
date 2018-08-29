@@ -11,6 +11,7 @@ from torb.utils import (
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
+# travis_key is access key: https://docs.travis-ci.com/user/triggering-builds
 travis_key = os.environ.get('travis_key')
 
 
