@@ -8,18 +8,9 @@ try:
 except:
     pass  # don't know why this fails with tox
 
-requires = [
-    'boto3==1.4.7',
-    'botocore==1.7.30',
-    'invoke',
-    'dcicutils>=0.2.3'
-]
-
-tests_require = [
-    'pytest>=3.0.1',
-    'pytest-mock',
-    'pytest-cov',
-]
+with open('requirements.txt') as f:
+    requirements = f.read().splitlines()
+pip_requirements = [r.strip() for r in requirements]
 
 setup(
     name='torb',
@@ -37,11 +28,7 @@ setup(
             'Programming Language :: Python',
             'Programming Language :: Python :: 3.4',
             ],
-    install_requires=requires,
+    install_requires=pip_requirements,
     include_package_data=True,
-    tests_require=tests_require,
-    extras_require={
-        'test': tests_require,
-    },
-    setup_requires=['pytest-runner', ],
+    setup_requires=pip_requirements,
 )
