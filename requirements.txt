@@ -1,12 +1,9 @@
-dcicutils>=0.4.6
+dcicutils>=0.5.1
 python-lambda-4dn==0.10.2
-
 # Build tasks
 invoke==0.18.1
-
 # Syntax checking
 flake8==2.4.1
-
 mock
 pytest-runner
 pytest==3.0.5
