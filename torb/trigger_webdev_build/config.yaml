@@ -2,8 +2,8 @@ region: us-east-1
 
 function_name: trigger-webdev-build
 handler: service.handler
-role: service-role/lambda-role 
-description: trigger a build on travis that will deploy to webdev if pass 
+role: service-role/lambda-role
+description: Trigger a build on travis that will deploy to webdev if it passes.
 
 # if access key and secret are left blank, boto will use the credentials
 # defined in the [default] section of ~/.aws/credentials.
@@ -11,5 +11,5 @@ aws_access_key_id:
 aws_secret_access_key:
 
 # dist_directory: dist
-timeout: 300 
-memory_size: 256 
+timeout: 300
+memory_size: 256
