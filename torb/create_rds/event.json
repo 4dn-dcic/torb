@@ -1,1 +1,1 @@
-{"type": "snapshot", "id": "fourfront-staging"} 
+{"type": "snapshot", "db_id": "fourfront-mastertest", "snapshot_arn": "arn:aws:rds:us-east-1:643366669028:snapshot:fourfront-mastertest"}
