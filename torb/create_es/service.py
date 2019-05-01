@@ -22,11 +22,9 @@ def handler(event, context):
     force_new = get_default(event, 'force_new_es')
 
     if not dry_run:
+        # if force_new, will make a new ES instance, possibly with new
+        # identifier if `dest_env` is already used. Otherwise, only create a
+        # new ES if one named `dest_env does not exist`
         bs.add_es(dest_env, force_new)
 
-    retval = {"type": "create_es",
-              "id": dest_env,
-              "dry_run": dry_run
-              }
-
-    return retval
+    return {"type": "create_es", "id": dest_env, "dry_run": dry_run}
