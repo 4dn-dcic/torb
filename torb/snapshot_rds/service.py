@@ -14,11 +14,11 @@ logger.setLevel(logging.INFO)
 def handler(event, context):
     """
     Run beanstalk_utils.create_db_snapshot, which will snapshot the RDS instance
-    with `db_id` and use `snapshot_id` as the snapshot identifier. If a current
+    with `dest_env` and use `snapshot_id` as the snapshot identifier. If a current
     snapshot already exists with this id, it will delete it.
     """
     # get data
-    db_id = get_default(event, 'db_id')
+    db_id = get_default(event, 'dest_env')
     snapshot_id = get_default(event, 'snapshot_id')
     dry_run = get_default(event, 'dry_run')
 
@@ -26,6 +26,7 @@ def handler(event, context):
         res = "Dry Run - would have ran create_db_snapshot(%s, %s)" % (db_id, snapshot_id)
         ret_dbid = "dry_run"
     else:
+        # will try to delete if an existing instance with db_id is found
         res = bs.create_db_snapshot(db_id, snapshot_id)
         if res == "Deleting":
                 raise bs.WaitingForBoto3("Waiting for RDS to delete")
