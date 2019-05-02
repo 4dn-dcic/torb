@@ -42,6 +42,14 @@ def process_overrides(event):
 @powerup('create_beanstalk')
 def handler(event, context):
     """
+    Create a new ElasticBeanstalk environment or update it if it already exists.
+    Takes a bunch of options from the input JSON and pass them onto
+    beanstalk_utils.create_bs, which sets environment variables for the EB env
+    and determines what configuration template to use. Check out the docs on
+    that function for more specifics.
+
+    Also creates a new Foursight environment with PUT to /api/environments.
+    The PUT body contains Fourfront and Elasticsearch urls.
     """
     logger.info("Before processing overrides: %s" % event)
     event = process_overrides(event)
@@ -57,6 +65,7 @@ def handler(event, context):
     fs_url = dest_env
 
     # overwrite db_endpoint potentially if working with staging/data
+    # specifically, if using the ff_deploy_staging workflow, this code is hit
     if 'webprod' in source_env and 'webprod' in dest_env:
         if not db_endpoint:
             db_endpoint = bs.GOLDEN_DB
