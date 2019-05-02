@@ -27,7 +27,7 @@ def handler(event, context):
     `branch` merged into it at the end of the successful Travis build.
 
     The code here looks very similar to utils.kick_travis_build, but is
-    different as it handles merge_into and checking of the travis response. 
+    different as it handles merge_into and checking of the travis response.
     """
     # setup path to run git
     merge_into = get_default(event, 'merge_into')
@@ -38,7 +38,7 @@ def handler(event, context):
     dry_run = get_default(event, 'dry_run')
 
     if not dest_env:
-        event['message'] = 'Must specify ElasticBeanstalk dest_env in event'
+        event['torb_message'] = 'Must specify ElasticBeanstalk dest_env in event'
         return event
 
     print("trigger build for %s/%s on branch %s" % (repo_owner, repo_name, branch))

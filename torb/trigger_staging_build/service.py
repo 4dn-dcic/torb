@@ -24,7 +24,7 @@ def handler(event, context):
     else:
         # event['source_env'] is unexpected. Bail
         return {"type": "trigger_staging_build",
-                "message": "invalid event.source_env", "event": event}
+                "torb_message": "invalid event.source_env", "event": event}
 
     start_time = datetime.now().strftime("%a_%b_%d_%Y__%H%M%S")
     run_name = "%s_deploy_for_%s" % (event['dest_env'], start_time)
@@ -40,12 +40,17 @@ def handler(event, context):
         input=make_input(event),
     )
 
-    # pop no json serializable stuff...
+    # pop non-JSON serializable stuff...
     response.pop('startDate')
     return response
 
 
 def make_input(event):
+    """
+    Generate the event JSON that will passed through the step function.
+    A lot of these variables are used when creating/updating the EB environment.
+    See: torb/create_beanstalk/service.py for more details
+    """
     data = {
       "source_env": event['source_env'],
       "dest_env": event['dest_env'],
