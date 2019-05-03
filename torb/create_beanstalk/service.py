@@ -50,6 +50,9 @@ def handler(event, context):
 
     Also creates a new Foursight environment with PUT to /api/environments.
     The PUT body contains Fourfront and Elasticsearch urls.
+
+    Adds `prev_bs_version` to the output event, which is the pre-existing
+    application version of the ElasticBeanstalk environment, if applicable.
     """
     logger.info("Before processing overrides: %s" % event)
     event = process_overrides(event)
@@ -89,6 +92,16 @@ def handler(event, context):
         except Exception as exc:
             log.info('Error on create_s3_buckets: %s' % exc)
             pass
+
+        # add the previous beanstalk version to event, which is used in the
+        # waitfor function down the line
+        try:
+            prev_bs_info = bs.beanstalk_info(dest_env)
+        except Exception as exc:
+            logger.warning('create_beanstalk: could not add prev_bs_version to event. %s' % exc)
+        else:
+            retval['prev_bs_version'] = prev_bs_info['VersionLabel']
+
         # Create or update ElasticBeanstalk environment
         res = bs.create_bs(dest_env, load_prod, db_endpoint, es_url, large_instance_beanstalk)
 
