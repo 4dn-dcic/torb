@@ -3,7 +3,7 @@ import os
 import logging
 from dcicutils import beanstalk_utils as bs
 from dcicutils.beanstalk_utils import WaitingForBoto3
-from torb.utils import powerup
+from torb.utils import powerup, get_default
 
 
 logging.basicConfig()
@@ -11,17 +11,37 @@ logger = logging.getLogger('logger')
 logger.setLevel(logging.INFO)
 
 
-def get_default(data, key):
-    return data.get(key, os.environ.get(key, None))
-
-
 @powerup('waitfor')
 def handler(event, context):
-    # get data
+    """
+    Utility lambda meant to be the glue in workflows. Takes a `type` in the
+    event JSON that is used to look up a "checker" function in the checkers
+    dict; these should have a standarized output. Also takes a generic `item_id`
+    from the event, which is passed to the checker function.
+
+    Use along with a "Retry" block when defining a workflow to wait until the
+    condition specified by the checker function is met. Below is an example,
+    which will retry when `WaitingForBoto3` Exception is encountered:
+    "Retry":[
+      {
+        "ErrorEquals":[
+          "WaitingForBoto3"
+        ],
+        "IntervalSeconds":30,
+        "MaxAttempts":100,
+        "BackoffRate":1.0
+      }
+    ],
+
+    Updates the `waitfor_details` for the event, which may be overwritten
+    if you don't handle with a specific "ResultPath" definition in the workflow
+    """
     item_id = get_default(event, 'id')
     boto3_type = get_default(event, 'type')
     dry_run = get_default(event, 'dry_run')
 
+    # these are checker functions that correspond to beanstalk_utils fxns
+    # the keys correspond to the 'type' that was last overwritten in event JSON
     checkers = {'snapshot': bs.is_snapshot_ready,
                 'create_rds': bs.is_db_ready,
                 'create_es': bs.is_es_ready,
@@ -39,10 +59,11 @@ def handler(event, context):
         details = "dry_run"
     else:
         if boto3_type == 'indexing':
-            if event.get('bs_version'):
-                status, details = checkers[boto3_type](item_id, event.get('bs_version'))
-            elif event.get('beanstalk', {}).get('bs_version'):
-                status, details = checkers[boto3_type](item_id, event['beanstalk']['bs_version'])
+            # add the ElasticBeanstalk version to call to is_indexing_finished
+            if event.get('prev_bs_version'):
+                status, details = checkers[boto3_type](item_id, event.get('prev_bs_version'))
+            elif event.get('beanstalk', {}).get('prev_bs_version'):
+                status, details = checkers[boto3_type](item_id, event['beanstalk']['prev_bs_version'])
             else:
                 status, details = checkers[boto3_type](item_id)
         else:
@@ -50,13 +71,7 @@ def handler(event, context):
 
     if not status:
         raise WaitingForBoto3("not ready yet, status: %s, details: %s"
-                              % (str(status), str(details)))
-
-    # add version if we are waiting for beanstalk being ready
-    # with ff_staging_deploy workflow this will actually add to event['beanstalk']['bs_version']
-    if boto3_type == 'create_bs' and 'bs_version' not in event and not dry_run:
-        info = bs.beanstalk_info(item_id)
-        event['bs_version'] = info['VersionLabel']
+                              % (status, details))
 
     event['waitfor_details'] = details
     return event
