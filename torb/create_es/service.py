@@ -2,16 +2,12 @@
 import os
 import logging
 from dcicutils import beanstalk_utils as bs
-from torb.utils import powerup
+from torb.utils import powerup, get_default
 
 
 logging.basicConfig()
 logger = logging.getLogger('logger')
 logger.setLevel(logging.INFO)
-
-
-def get_default(data, key):
-    return data.get(key, os.environ.get(key, None))
 
 
 @powerup('create_es')

@@ -10,10 +10,6 @@ logger = logging.getLogger('logger')
 logger.setLevel(logging.INFO)
 
 
-def get_default(data, key):
-    return data.get(key, os.environ.get(key, None))
-
-
 @powerup('create_rds')
 def handler(event, context):
     """
