@@ -37,12 +37,6 @@ def test_foursight_logging(fs_event):
     assert(res.json())
 
 
-def test_get_es_from_health_page():
-    url = 'http://data.4dnucleome.org'
-    res = bs.get_es_from_health_page(url)
-    assert res
-
-
 def test_is_indexing_finished():
     # mastertest url
     env = 'fourfront-mastertest'
