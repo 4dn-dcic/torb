@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import os
 import logging
 from dcicutils import beanstalk_utils as bs
 from torb.utils import powerup, get_default
@@ -90,7 +89,7 @@ def handler(event, context):
         try:
             bs.create_s3_buckets(dest_env)
         except Exception as exc:
-            log.info('Error on create_s3_buckets: %s' % exc)
+            logger.info('Error on create_s3_buckets: %s' % exc)
             pass
 
         # add the previous beanstalk version to event, which is used in the

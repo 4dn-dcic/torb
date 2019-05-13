@@ -3,11 +3,7 @@ import os
 import errno
 import sys
 import webbrowser
-import json
-import requests
-import random
 from invoke import task, run
-import boto3
 import contextlib
 import shutil
 import time
@@ -42,17 +38,17 @@ def setenv(**kwargs):
 
 def get_all_core_lambdas():
     return [
-        'travis_deploy_prod',
         'travis_deploy',
         'create_es',
         'create_beanstalk',
         'waitfor',
         'snapshot_rds',
         'create_rds',
-        'set_bs_env',
         'update_bs_config',
-        'trigger_prod_build',
-        'trigger_staging_build'
+        'trigger_staging_build',
+        'trigger_mastertest_build',
+        'trigger_webdev_build',
+        'update_foursight'
     ]
 
 
@@ -102,19 +98,6 @@ def mkdir(path):
             pass
         else:
             raise
-
-
-@task
-def new_lambda(ctx, name, base='create_beanstalk'):
-    '''
-    create a new lambda by copy from a base one and replacing some core strings.
-    '''
-    src_dir = './torb/%s' % base
-    dest_dir = './torb/%s' % name
-    mkdir(dest_dir)
-    copytree(src=src_dir, dst=dest_dir)
-    chdir(dest_dir)
-    # TODO: awk some lines here...
 
 
 @task(aliases=['tests'])
@@ -211,7 +194,7 @@ def deploy(ctx, name, version=None, no_tests=False):
 @task
 def deploy_lambda_package(ctx, name):
     # third part tools, should all be tar
-    '''
+    """
     tools_dir = os.path.join(ROOT_DIR, "third_party")
     bin_dir = os.path.join(ROOT_DIR, "bin")
 
@@ -219,8 +202,7 @@ def deploy_lambda_package(ctx, name):
         if filename.endswith('.tar'):
             fullpath = os.path.join(tools_dir, filename)
             run("tar -xvf %s -C %s" % (fullpath, bin_dir))
-    '''
-
+    """
     aws_lambda.deploy(os.getcwd(), local_package='../..', raw_copy='../../bin',
                       requirements='../../requirements.txt')
 

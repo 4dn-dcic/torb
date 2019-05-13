@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import os
 import logging
 from dcicutils import beanstalk_utils as bs
 from torb.utils import powerup, get_default

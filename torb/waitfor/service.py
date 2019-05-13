@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import os
 import logging
 from dcicutils import beanstalk_utils as bs
 from dcicutils.beanstalk_utils import WaitingForBoto3
