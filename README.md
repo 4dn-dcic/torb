@@ -19,7 +19,7 @@ Lambda function name: `create-es`. [Link](./torb/create_es/).
 
 Workflows: used in `ff_deploy_staging`
 
-Provide input with `dest_env` to create a new Elasticsearch (ES) instance with the given identifier. Can optionally use `force_new_es` to always create a new ES instance, but this should probably not be used, as creating an ES instance by hand is usually the way to go.
+Provide input with `dest_env` to create a new Elasticsearch (ES) instance with the given identifier. Can optionally use `force_new_es` to always create a new ES instance, but this should probably not be used, as creating an ES instance by hand is usually the way to go. Updates `id` and `type` in event JSON to coordinate with `waitfor` Lambda.
 
 ### create_rds
 Lambda function name: `create-rds`. [Link](./torb/create_rds/).
@@ -40,7 +40,7 @@ Lambda function name: `travis-deploy`. [Link](./torb/travis_deploy/).
 
 Workflows: used in `ff_deploy_staging`
 
-Start a travis build and leverage the `tibanna_deploy` environment variables for the travis build to deploy to the "fourfront-mastertest" ElasticBeanstalk on a successful build. Can also leverage `merge_to` to merge a given branch into another one at the end of the build. Branches are determined by `event` and `merge_into` in the event JSON; ElasticBeanstalk environment is set with `dest_env`. See the [Fourfront travis config](https://github.com/4dn-dcic/fourfront/blob/d477c04181ff097bfd7fa59092c18e0c13540a90/.travis.yml#L106-L118) and [deploy_beanstalk.py](https://github.com/4dn-dcic/fourfront/blob/master/deploy/deploy_beanstalk.py) for how this is done. This is a bit different from `trigger_mastertest_build` and `trigger_webdev_build`, since it propogates the event output and therefore can be used within a step function.
+Start a travis build and leverage the `tibanna_deploy` environment variables for the travis build to deploy to the "fourfront-mastertest" ElasticBeanstalk on a successful build. Can also leverage `merge_to` to merge a given branch into another one at the end of the build. Branches are determined by `event` and `merge_into` in the event JSON; ElasticBeanstalk environment is set with `dest_env`. See the [Fourfront travis config](https://github.com/4dn-dcic/fourfront/blob/d477c04181ff097bfd7fa59092c18e0c13540a90/.travis.yml#L106-L118) and [deploy_beanstalk.py](https://github.com/4dn-dcic/fourfront/blob/master/deploy/deploy_beanstalk.py) for how this is done. This is a bit different from `trigger_mastertest_build` and `trigger_webdev_build`, since it propogates the event output and therefore can be used within a step function. Writes request information to the `travis` subobject in the event. Also updates `id` and `type` in event to coordinate with `waitfor` Lambda.
 
 ### trigger_mastertest_build
 Lambda function name: `trigger-mastertest-build`. [Link](./torb/trigger_mastertest_build/).
@@ -68,7 +68,7 @@ Lambda function name: `update-bs-config`. [Link](./torb/update_bs_config/).
 
 Workflows: used in `ff_deploy_staging`
 
-Update the configuration template of an existing ElasticBeanstalk environment. Takes `dest_env`, which is the environment name, and `template`, which is the name of the configuration template. Will set `waitfor_details` in the event JSON for coordination with `waitfor` lambda.
+Update the configuration template of an existing ElasticBeanstalk environment. Takes `dest_env`, which is the environment name, and `template`, which is the name of the configuration template. Updates `waitfor_details` in the event JSON. Also updates `id` and `type` in event to coordinate with `waitfor` Lambda.
 
 ### update_foursight
 Lambda function name: `update-foursight`. [Link](./torb/update_foursight/).

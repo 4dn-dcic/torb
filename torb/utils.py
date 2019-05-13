@@ -10,7 +10,7 @@ from dcicutils.beanstalk_utils import log_to_foursight
 # These utils exclusively live in Torb #
 ########################################
 
-LOG = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 
 def get_default(data, key, default=None):
@@ -40,7 +40,7 @@ def kick_travis_build(branch, repo_owner, repo_name, env, travis_key=None):
     # by adding the tibanna-deploy env variable, which will trigger the deploy
     body = {
         "request": {
-            "message": "kick_travis_build: Torb triggered build to %s has started. Have a nice day! :)" % env,
+            "message": "kick_travis_build: Torb triggered build to %s has started" % env,
             "branch": branch,
             "config": {
                 "before_install": ["export tibanna_deploy=" + env] +
@@ -61,9 +61,9 @@ def kick_travis_build(branch, repo_owner, repo_name, env, travis_key=None):
     resp = requests.post(url, headers=headers, data=json.dumps(body))
 
     try:
-        LOG.info(resp)
-        LOG.info(resp.text)
-        LOG.info(resp.json())
+        logger.info(resp)
+        logger.info(resp.text)
+        logger.info(resp.json())
     except:
         pass
 

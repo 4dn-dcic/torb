@@ -46,7 +46,8 @@ def handler(event, context):
                 'create_es': bs.is_es_ready,
                 'create_bs': bs.is_beanstalk_ready,
                 'indexing': bs.is_indexing_finished,
-                'travis': bs.is_travis_finished}
+                'travis_start': bs.is_travis_started,
+                'travis_finish': bs.is_travis_finished}
 
     if dry_run:
         try:
@@ -55,24 +56,32 @@ def handler(event, context):
         except:
             logger.warn("Dry Run, but boto3_type not in checkers")
         status = True
-        details = "dry_run"
+        event["waitfor_details"] = "dry_run"
+        return event
+
+    if boto3_type not in checkers:
+        raise Exception('waitfor error: boto3_type %s not in checkers' % boto3_type)
+    checker_fxn = checkers[boto3_type]
+
+    # define custom checker fxn input
+    if boto3_type == 'indexing':
+        # if we have a previous bs version and travis build id, pass them
+        # to the is_indexing_finished check function
+        prev_bs_version = event.get('beanstalk', {}).get('prev_bs_version')
+        travis_build_id = event.get('travis', {}).get('build_id')
+        status, details = checker_fxn(item_id, prev_version=prev_bs_version,
+                                      travis_build_id=travis_build_id)
     else:
-        if boto3_type not in checkers:
-            raise Exception('waitfor error: boto3_type %s not in checkers' % boto3_type)
-        checker_fxn = checkers[boto3_type]
-        if boto3_type == 'indexing':
-            # if we have a previous bs version and travis build id, pass them
-            # to the is_indexing_finished check function
-            prev_bs_version = event.get('beanstalk', {}).get('prev_bs_version')
-            travis_build_id = event.get('travis', {}).get('id')
-            status, details = checker_fxn(item_id, prev_version=prev_bs_version,
-                                          travis_build_id=travis_build_id)
-        else:
-            status, details = checker_fxn(item_id)
+        status, details = checker_fxn(item_id)
 
     if not status:
         raise WaitingForBoto3("not ready yet, status: %s, details: %s"
                               % (status, details))
+
+    # define custom checker fxn output
+    if boto3_type == 'travis_start':
+        if 'travis' in event:
+            event['travis']['build_id'] = details['builds'][0]['id']
 
     event['waitfor_details'] = details
     return event

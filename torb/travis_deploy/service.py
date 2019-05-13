@@ -26,6 +26,9 @@ def handler(event, context):
     `merge_into` is an optional Fourfront branch that, if provided, will have
     `branch` merged into it at the end of the successful Travis build.
 
+    Will set `type` and `id` in waitfor, as well as `travis` subobject in
+    event to keep track of the generated Travis request ID.
+
     The code here looks very similar to utils.kick_travis_build, but is
     different as it handles merge_into and checking of the travis response.
     """
@@ -41,7 +44,7 @@ def handler(event, context):
         event['torb_message'] = 'Must specify ElasticBeanstalk dest_env in event'
         return event
 
-    print("trigger build for %s/%s on branch %s" % (repo_owner, repo_name, branch))
+    logger.info("trigger build for %s/%s on branch %s" % (repo_owner, repo_name, branch))
     if dry_run:
         return event
 
@@ -50,7 +53,7 @@ def handler(event, context):
     # TODO: add in snovault check to before_install
     body = {
         "request": {
-            "message": "travis-deploy: Torb triggered build to %s has started. Have a nice day! :)" % dest_env,
+            "message": "travis-deploy: Torb triggered build to %s has started" % dest_env,
             "branch": branch,
             "config": {
                 "before_install": ["export tibanna_deploy=%s" % (dest_env)] +
@@ -76,17 +79,16 @@ def handler(event, context):
 
     resp = requests.post(url, headers=headers, data=json.dumps(body))
     if resp.ok:
-        logger.info("request response ok")
-        logger.info(resp.json())
-        travis_req = requests.get(url, headers=headers)
-        # just check the most recent requests.. should be 0 or 1 usually
-        for i in range(10):
-            build = travis_req.json()['requests'][i]
-            if len(build['builds']) > 0:
-                event['type'] = 'travis'
-                event['id'] = build['builds'][0]['id']
-                return event
+        logger.info("Successfully triggered Travis build. Info: %s" % resp.json())
+        # get request id and use it to find build id
+        req_id = resp.json()['request']['id']
+        req_url = ('https://api.travis-ci.org/repo/%s%s%s/request/%s'
+                  % (repo_owner, '%2F', repo_name, req_id)
+        # set id and type for waitfor
+        event['type'] = 'travis_start'
+        event['id'] = req_url
+        event['travis'] = {'request_id': req_id, 'request_url': req_url}
         return event
     else:
-        logger.info(resp.text)
+        logger.info('Could not trigger Travis build. Info: %s' % resp.text)
         raise Exception(resp.text)
