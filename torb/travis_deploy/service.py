@@ -70,8 +70,7 @@ def handler(event, context):
                'Accept': 'application/json',
                'Travis-API-Version': '3',
                'User-Agent': 'tibanna/0.1.0',
-               'Authorization': 'token %s' % travis_key
-               }
+               'Authorization': 'token %s' % travis_key}
 
     url = 'https://api.travis-ci.org/repo/%s%s%s/requests' % (repo_owner, '%2F', repo_name)
 
@@ -84,9 +83,8 @@ def handler(event, context):
         for i in range(10):
             build = travis_req.json()['requests'][i]
             if len(build['builds']) > 0:
-                build_id = build['builds'][0]['id']
                 event['type'] = 'travis'
-                event['id'] = build_id
+                event['id'] = build['builds'][0]['id']
                 return event
         return event
     else:
