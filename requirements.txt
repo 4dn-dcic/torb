@@ -1,4 +1,5 @@
-dcicutils>=0.7.0
+# dcicutils>=0.7.0
+-e /Users/carl/GitHub/utils
 python-lambda-4dn==0.10.2
 # Build tasks
 invoke==0.18.1

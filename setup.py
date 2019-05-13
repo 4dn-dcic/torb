@@ -10,7 +10,7 @@ except:
 
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
-pip_requirements = [r.strip() for r in requirements]
+pip_requirements = [r.strip() for r in requirements if (not r.startswith('-e') and not r.startswith('#'))]
 
 setup(
     name='torb',

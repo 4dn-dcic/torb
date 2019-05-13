@@ -83,7 +83,7 @@ def handler(event, context):
         # get request id and use it to find build id
         req_id = resp.json()['request']['id']
         req_url = ('https://api.travis-ci.org/repo/%s%s%s/request/%s'
-                  % (repo_owner, '%2F', repo_name, req_id)
+                   % (repo_owner, '%2F', repo_name, req_id))
         # set id and type for waitfor
         event['type'] = 'travis_start'
         event['id'] = req_url
