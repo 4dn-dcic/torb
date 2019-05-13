@@ -70,6 +70,7 @@
     },
     "TravisBuild":{
       "Type":"Task",
+      "ResultPath":"$.travis",
       "Resource":"arn:aws:lambda:us-east-1:643366669028:function:travis-deploy",
       "Next":"WaitForIndexingTransform"
     },
