@@ -1,6 +1,5 @@
 {
-  "source_env": "fourfront-webprod",
-  "dest_env": "fourfront-staging",
+  "dest_env": "fourfront-mastertest",
   "dry_run": false,
   "merge_into": "production",
   "repo_owner": "4dn-dcic",

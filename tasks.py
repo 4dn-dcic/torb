@@ -3,13 +3,10 @@ import os
 import errno
 import sys
 import webbrowser
-import json
-import requests
-import random
 from invoke import task, run
-import boto3
 import contextlib
 import shutil
+import time
 # from botocore.errorfactory import ExecutionAlreadyExists
 from contextlib import contextmanager
 import aws_lambda
@@ -18,21 +15,6 @@ from dcicutils import beanstalk_utils as bs
 docs_dir = 'docs'
 build_dir = os.path.join(docs_dir, '_build')
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
-POSITIVE = 'https://gist.github.com/j1z0/bbed486d85fb4d64825065afbfb2e98f/raw/positive.txt'
-NEGATIVE = 'https://gist.github.com/j1z0/bbed486d85fb4d64825065afbfb2e98f/raw/negative.txt'
-
-
-def get_random_line_in_gist(url):
-    listing = requests.get(url)
-    return random.choice(listing.text.split("\n"))
-
-
-@task
-def play(ctx, positive=False):
-    type_url = POSITIVE if positive else NEGATIVE
-    # no spaces in url
-    media_url = '%20'.join(get_random_line_in_gist(type_url).split())
-    run("vlc -I rc %s --play-and-exit -q" % (media_url))
 
 
 @contextmanager
@@ -56,18 +38,18 @@ def setenv(**kwargs):
 
 def get_all_core_lambdas():
     return [
-            'travis_deploy_prod',
-            'travis_deploy',
-            'create_es',
-            'create_beanstalk',
-            'waitfor',
-            'snapshot_rds',
-            'create_rds',
-            'set_bs_env',
-            'update_bs_config',
-            'trigger_prod_build',
-            'trigger_staging_build',
-            ]
+        'travis_deploy',
+        'create_es',
+        'create_beanstalk',
+        'waitfor',
+        'snapshot_rds',
+        'create_rds',
+        'update_bs_config',
+        'trigger_staging_build',
+        'trigger_mastertest_build',
+        'trigger_webdev_build',
+        'update_foursight'
+    ]
 
 
 @contextlib.contextmanager
@@ -79,21 +61,6 @@ def chdir(dirname=None):
             yield
     finally:
         os.chdir(curdir)
-
-
-def upload(keyname, data, s3bucket, secret=None):
-
-    if secret is None:
-        secret = os.environ.get("SECRET")
-        if secret is None:
-            raise RuntimeError("SECRET should be defined in env")
-
-    s3 = boto3.client('s3')
-    s3.put_object(Bucket=s3bucket,
-                  Key=keyname,
-                  Body=data,
-                  SSECustomerKey=secret,
-                  SSECustomerAlgorithm='AES256')
 
 
 @task
@@ -133,22 +100,11 @@ def mkdir(path):
             raise
 
 
-@task
-def new_lambda(ctx, name, base='create_beanstalk'):
-    '''
-    create a new lambda by copy from a base one and replacing some core strings.
-    '''
-    src_dir = './torb/%s' % base
-    dest_dir = './torb/%s' % name
-    mkdir(dest_dir)
-    copytree(src=src_dir, dst=dest_dir)
-    chdir(dest_dir)
-    # TODO: awk some lines here...
-
-
 @task(aliases=['tests'])
 def test(ctx, watch=False, last_failing=False, no_flake=False, k='',  extra=''):
-    """Run the tests.
+    """
+    Run flake and the tests. Set no_flake to true to skip flake. Any value
+    provided to `k` parameter will be passed to "pytest -k <value>"
     Note: --watch requires pytest-xdist to be installed.
     """
     import pytest
@@ -163,12 +119,6 @@ def test(ctx, watch=False, last_failing=False, no_flake=False, k='',  extra=''):
     if last_failing:
         args.append('--lf')
     retcode = pytest.main(args)
-    try:
-        good = True if retcode == 0 else False
-        play(ctx, good)
-    except:  # noqa E722
-        print("install vlc for more exciting test runs...")
-        pass
     if retcode != 0:
         print("test failed exiting")
         sys.exit(retcode)
@@ -191,6 +141,10 @@ def clean(ctx):
 
 @task
 def deploy(ctx, name, version=None, no_tests=False):
+    """
+    Deploy lambdas, given by `name` parameter. Use 'all' or 'devops' to deploy
+    custom lists of lambdas (see below)
+    """
     print("preparing for deploy...")
     print("make sure tests pass")
     if no_tests is False:
@@ -213,33 +167,34 @@ def deploy(ctx, name, version=None, no_tests=False):
     else:
         names = [name, ]
 
-    # dist directores are the enemy, clean the all
+    # dist directores are the enemy, clean them all
     for name in get_all_core_lambdas():
-        print("cleaning house before deploying")
+        print("Cleaning all lambda builds before deploying...")
         with chdir("./torb/%s" % (name)):
             clean(ctx)
 
     for name in names:
         print("=" * 20, "Deploying lambda", name, "=" * 20)
         with chdir("./torb/%s" % (name)):
-            print("clean up previous builds.")
+            print("Cleaning up previous build...")
             clean(ctx)
-            print("building lambda package")
+            print("Building lambda package...")
             deploy_lambda_package(ctx, name)
             # need to clean up all dist, otherwise, installing local package takes forever
+            print("Cleaning up deployed build...")
             clean(ctx)
         print("next get version information")
         # version = update_version(ctx, version)
         print("then tag the release in git")
         # git_tag(ctx, version, "new production release %s" % (version))
         # print("Build is now triggered for production deployment of %s "
-        #      "check travis for build status" % (version))
+        #       "check travis for build status" % (version))
 
 
 @task
 def deploy_lambda_package(ctx, name):
     # third part tools, should all be tar
-    '''
+    """
     tools_dir = os.path.join(ROOT_DIR, "third_party")
     bin_dir = os.path.join(ROOT_DIR, "bin")
 
@@ -247,48 +202,18 @@ def deploy_lambda_package(ctx, name):
         if filename.endswith('.tar'):
             fullpath = os.path.join(tools_dir, filename)
             run("tar -xvf %s -C %s" % (fullpath, bin_dir))
-    '''
-
+    """
     aws_lambda.deploy(os.getcwd(), local_package='../..', raw_copy='../../bin',
                       requirements='../../requirements.txt')
 
 
 @task
-def upload_sbg_keys(ctx, sbgkey=None, env='fourfront-webprod'):
-    if sbgkey is None:
-        sbgkey = os.environ.get('SBG_KEY')
-
-    if sbgkey is None:
-        print("error no sbgkey found in environment")
-        return 1
-
-    s3bucket = "elasticbeanstalk-%s-system" % env
-    return upload_keys(ctx, sbgkey, 'sbgkey', s3bucket)
-
-
-def upload_keys(ctx, keys, name, s3bucket=None):
-    if not s3bucket:
-        s3bucket = 'elasticbeanstalk-fourfront-webprod-system'
-    print("uploading sbkey to %s as %s" % (s3bucket, name))
-    upload(name, keys, s3bucket)
-
-
-@task
-def upload_s3_keys(ctx, key=None, secret=None, env="fourfront-webprod"):
-    if key is None:
-        key = os.environ.get("SBG_S3_KEY")
-    if secret is None:
-        secret = os.environ.get("SBG_S3_SECRET")
-
-    pckt = {'key': key,
-            'secret': secret}
-    s3bucket = "elasticbeanstalk-%s-system" % env
-    return upload_keys(ctx, json.dumps(pckt), 'sbgs3key', s3bucket)
-
-
-@task
 def update_version(ctx, version=None):
-    from wranglertools._version import __version__
+    """
+    CURRENTLY NOT USED
+    Would be used to update _version.py if we decide to package torb
+    """
+    from torb._version import __version__
     print("Current version is ", __version__)
     if version is None:
         version = input("What version would you like to set for new release (please use x.x.x / "
@@ -312,6 +237,10 @@ def update_version(ctx, version=None):
 
 @task
 def git_tag(ctx, tag_name, msg):
+    """
+    CURRENTLY NOT USED
+    Would be used to tag a git release if we decide to package torb
+    """
     run('git tag -a %s -m "%s"' % (tag_name, msg))
     run('git push --tags')
     run('git push')
@@ -355,15 +284,11 @@ def watch_docs(ctx):
 
 
 @task
-def readme(ctx, browse=False):
-    run('rst2html.py README.rst > README.html')
-    if browse:
-        webbrowser.open_new_tab('README.html')
-
-
-@task
 def publish(ctx, test=False):
-    """Publish to the cheeseshop."""
+    """
+    NOT CURRENTLY USED
+    Publish this package to pypi.
+    """
     clean(ctx)
     if test:
         run('python setup.py register -r test sdist bdist_wheel', echo=True)
@@ -390,13 +315,41 @@ def travis(ctx, branch='production', owner='4dn-dcic', repo_name='fourfront'):
 
 @task
 def swap_cname(ctx, src, dest):
-    print("swapping cnames")
+    print("=" * 20, "Deploying CNAMEs", "=" * 20)
     bs.swap_cname(src, dest)
-
-    print("giving cnames a few second to update..")
-    import time
+    print("Giving CNAMEs 10 seconds to update...")
     time.sleep(10)
-    print("now updating foursight")
-    # handle switching foursight up as well
-    bs.create_foursight_auto(src)
-    bs.create_foursight_auto(dest)
+    print("Now updating foursight environments...")
+    # handle switching foursight environments for data/staging
+    res_data = bs.create_foursight_auto(src)
+    print('Updated foursight %s environment to use %s. Foursight response: %s'
+          % (res_data['fs_url'], res_data['dest_env'], res_data['foursight']))
+    res_stag = bs.create_foursight_auto(dest)
+    print('Updated foursight %s environment to use %s. Foursight response: %s'
+          % (res_stag['fs_url'], res_stag['dest_env'], res_stag['foursight']))
+
+
+@task
+def deploy_workflow(ctx):
+    """
+    Deploy a Torb step function by name
+    See https://github.com/4dn-dcic/tibanna/blob/master/core/utils.py#L317
+    """
+    raise NotImplementedError
+
+
+@task
+def run_workflow(ctx):
+    """
+    Trigger a Torb step function by name, with direct input JSON or a filepath.
+    See https://github.com/4dn-dcic/tibanna/blob/master/core/utils.py#L230
+    """
+    # client = boto3.client('stepfunctions', region_name='us-east-1')
+    # # maybe make a function in dcicutils.sfn_utils to get ARN by name?
+    # STEP_FUNCTION_ARN = ...
+    # response = client.start_execution(
+    #     stateMachineArn=STEP_FUNCTION_ARN,
+    #     name=run_name,
+    #     input=make_input(event),
+    # )
+    raise NotImplementedError

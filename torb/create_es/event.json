@@ -1,1 +1,1 @@
-{"type": "snapshot", "id": "fourfront-staging"} 
+{"dest_env": "fourfront-mastertest", "dry_run": false, "force_new_es": false}

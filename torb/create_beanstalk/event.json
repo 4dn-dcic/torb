@@ -1,1 +1,19 @@
-{"type": "snapshot", "id": "fourfront-staging"} 
+{
+  "source_env": "fourfront-webprod",
+  "branch": "master",
+  "dry_run": true,
+  "load_prod": true,
+  "dest_env": "fourfront-webprod2",
+  "repo_owner": "4dn-dcic",
+  "repo_name": "fourfront",
+  "large_bs": true,
+  "merge_into": "production",
+  "_overrides": [
+    {
+      "waitfor_details": "search-fourfront-webprod2-fkav4x4wjvhgejtcg6ilrmczpe.us-east-1.es.amazonaws.com:80",
+      "type": "create_es",
+      "id": "fourfront-webprod2",
+      "dry_run": false
+    }
+  ]
+}

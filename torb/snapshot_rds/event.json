@@ -1,3 +1,1 @@
-{"source_env": "fourfront-webprod",
-	   	"dest_env": "fourfront-staging",
-		"dry_run": true}
+{"dest_env": "fourfront-mastertest", "snapshot_id": "fourfront-mastertest", "dry_run": true}

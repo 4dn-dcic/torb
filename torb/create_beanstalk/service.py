@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-import os
 import logging
 from dcicutils import beanstalk_utils as bs
-from torb.utils import powerup
+from torb.utils import powerup, get_default
 from six import string_types
 
 
@@ -11,36 +10,52 @@ logger = logging.getLogger('logger')
 logger.setLevel(logging.INFO)
 
 
-def get_default(data, key):
-    return data.get(key, os.environ.get(key, None))
-
-
 def process_overrides(event):
-    '''tries to find the values we need in _overrides
-    assume _overrides to be list of objects
     '''
-    # lookups is dict mapping override type to the field that stores
-    # the information we want, to the name the field should be in events
-    lookups = {'create_rds': ['waitfor_details', 'db_endpoint'],
-               'create_es': ['waitfor_details', 'es_url'],
-               }
+    Update fields in the event JSON based off of the _override subobject in the
+    event. Requires a 'type' in the _override object, which is then looked up
+    in the lookups dict.
 
-    rides = event.get('_overrides')
+    _overrides is set from the step function. See "ResultPath":"$._overrides"
+    in the workflow definition.
+    '''
+    # in form: <override type to find>: [<override value>, <field to update>]
+    # given: "_override": [{"type": "create_es", "waitfor_details": <val>}],
+    # then will set "es_url" = <val> in event JSON
+    lookups = {
+        'create_rds': ['waitfor_details', 'db_endpoint'],
+        'create_es': ['waitfor_details', 'es_url'],
+    }
 
-    if rides and not isinstance(rides, string_types):
-        for item in rides:
-            if item and hasattr(item, 'get'):
-                lookup = lookups.get(item.get('type'))
-                if lookup:
-                    event[lookup[1]] = item.get(lookup[0])
+    overrides = event.get('_overrides')
+
+    if overrides and not isinstance(overrides, string_types):
+        for override in overrides:
+            if override and hasattr(override, 'get'):
+                lookup = lookups.get(override.get('type'))
+                if lookup and override.get(lookup[0]):
+                    event[lookup[1]] = override[lookup[0]]
     return event
 
 
 @powerup('create_beanstalk')
 def handler(event, context):
+    """
+    Create a new ElasticBeanstalk environment or update it if it already exists.
+    Takes a bunch of options from the input JSON and pass them onto
+    beanstalk_utils.create_bs, which sets environment variables for the EB env
+    and determines what configuration template to use. Check out the docs on
+    that function for more specifics.
+
+    Also creates a new Foursight environment with PUT to /api/environments.
+    The PUT body contains Fourfront and Elasticsearch urls.
+
+    Adds `prev_bs_version` to the output event, which is the pre-existing
+    application version of the ElasticBeanstalk environment, if applicable.
+    """
+    logger.info("Before processing overrides: %s" % event)
     event = process_overrides(event)
-    logger.info("after processing")
-    logger.info(event)
+    logger.info("After processing overrides: %s" % event)
 
     source_env = get_default(event, 'source_env')
     dest_env = get_default(event, 'dest_env')
@@ -51,7 +66,8 @@ def handler(event, context):
     large_instance_beanstalk = get_default(event, 'large_bs')
     fs_url = dest_env
 
-    # overwrite db_endpoint potentially
+    # overwrite db_endpoint potentially if working with staging/data
+    # specifically, if using the ff_deploy_staging workflow, this code is hit
     if 'webprod' in source_env and 'webprod' in dest_env:
         if not db_endpoint:
             db_endpoint = bs.GOLDEN_DB
@@ -60,20 +76,32 @@ def handler(event, context):
         if dest_env == bs.whodaman():
             fs_url = 'data'
 
-    retval = {"type": "create_bs",
-              "id": dest_env,
-              "dry_run": dry_run,
-              "source_env": source_env,
-              "dest_env": dest_env,
-              }
+    retval = {
+        "type": "create_bs",
+        "id": dest_env,
+        "dry_run": dry_run,
+        "source_env": source_env,
+        "dest_env": dest_env,
+    }
 
     if not dry_run:
-        # make sure we have appropriate s3_buckets
+        # Make sure we have the required s3 buckets
         try:
             bs.create_s3_buckets(dest_env)
-        except:
+        except Exception as exc:
+            logger.info('Error on create_s3_buckets: %s' % exc)
             pass
-        # create env
+
+        # add the previous beanstalk version to event, which is used in the
+        # waitfor function down the line
+        try:
+            prev_bs_info = bs.beanstalk_info(dest_env)
+        except Exception as exc:
+            logger.warning('create_beanstalk: could not add prev_bs_version to event. %s' % exc)
+        else:
+            retval['prev_bs_version'] = prev_bs_info['VersionLabel']
+
+        # Create or update ElasticBeanstalk environment
         res = bs.create_bs(dest_env, load_prod, db_endpoint, es_url, large_instance_beanstalk)
 
         bs_url = res.get('CNAME')
@@ -83,9 +111,9 @@ def handler(event, context):
         if bs_url:
             retval['cname'] = bs_url
             fs_res = bs.create_foursight(dest_env, bs_url, es_url, fs_url)
-            logger.info("create foursight with result = %s " % fs_res)
+            logger.info("Created foursightenv with result: %s " % fs_res)
         else:
-            logger.info("No beanstalk endpoint yet, can't create foursight monitoring")
+            logger.info("No beanstalk endpoint yet, can't create foursight env")
 
         logger.info(res)
     return retval
