@@ -32,9 +32,10 @@ def waitfor_json():
 
 
 def test_foursight_logging(fs_event):
-    res = bs.log_to_foursight(fs_event, "unittest", status='PASS', full_output="this is just a test")
-    assert(res)
-    assert(res.json())
+    overrides = {'status': 'PASS', 'full_output': "this is just a test"}
+    res = bs.log_to_foursight(fs_event, "unittest", overrides=overrides)
+    assert res['status'] == 'success'
+    assert res['updated_content']['full_output'] == overrides['full_output']
 
 
 def test_is_indexing_finished():

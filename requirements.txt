@@ -1,4 +1,4 @@
-dcicutils>=0.7.4
+dcicutils>=0.8.1
 python-lambda-4dn==0.10.2
 # Build tasks
 invoke==0.18.1
