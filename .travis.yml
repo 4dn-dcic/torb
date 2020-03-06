@@ -3,10 +3,9 @@ sudo: false
 cache:
   pip: true
 python:
-- '2.7'
+- '3.6'
 install:
-- pip install six
-- pip install -U -r requirements.txt
+- poetry install
 - pip install codacy-coverage
 script:
 - invoke test
