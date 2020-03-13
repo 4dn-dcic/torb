@@ -5,8 +5,8 @@ description = "Torb is a buildbot that uses lambda and aws step functions to run
 authors = ["4DN-DCIC Team <support@4dnucleome.org>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/4dn-dcic/python-lambda"
-repository = "https://github.com/4dn-dcic/python-lambda"
+homepage = "https://github.com/4dn-dcic/torb"
+repository = "https://github.com/4dn-dcic/torb"
 packages = [
   { include="torb", from="." }
 ]
@@ -22,11 +22,12 @@ classifiers = [
 [tool.poetry.dependencies]
 "python" = ">=3.6,<3.7"
 "dcicutils" = ">=0.8.1"
-"python-lambda-4dn" = ">=0.10.2"
+"PyYAML" = ">=5.1,<5.3"
+"python-lambda-4dn" = "2.0.0b1"
 # Build tasks
 "invoke" = ">=0.18.1,<1"
 # Syntax checking
-"flake8" = ">=2.4.1,<3"
+"flake8" = ">=3.7.8,<4"
 "mock" = ">=4.0.1,<5"
 "pytest-runner" = ">=5.2"
 "pytest" = ">=3.0.5,<4"

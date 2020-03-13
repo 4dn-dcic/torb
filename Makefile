@@ -27,16 +27,20 @@ clean-env:
 	rm -rf *env/
 
 lint:
-	flake8 python-lambda tests
+	flake8 torb tests
 
 release: clean
-	python setup.py sdist upload
-	python setup.py bdist_wheel upload
+	poetry publish
 
 install: clean
-	python setup.py install
+	poetry install
 
 full-install: clean
 	virtualenv --python python3.6 torb_env
-	source torb_env/bin/activate && pip install --upgrade pip
-	source torb_env/bin/activate && python setup.py install
+	source torb_env/bin/activate && poetry install
+
+torb_env:
+	if [ ! -e torb_env ]; then virtualenv --python python3.6 torb_env; fi
+
+test: torb_env
+	source torb_env/bin/activate && pytest
