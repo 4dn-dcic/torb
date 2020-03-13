@@ -5,6 +5,8 @@ cache:
 python:
 - '3.6'
 install:
+- pip install --upgrade pip==19.0.3
+- pip install poetry
 - poetry install
 - pip install codacy-coverage
 script:
