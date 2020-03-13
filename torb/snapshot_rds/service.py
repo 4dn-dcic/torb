@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from dcicutils import beanstalk_utils as bs
-from torb.utils import powerup, get_default
+from ..utils import powerup, get_default
 
 
 logging.basicConfig()
@@ -28,7 +28,7 @@ def handler(event, context):
         # will try to delete if an existing instance with db_id is found
         res = bs.create_db_snapshot(db_id, snapshot_id)
         if res == "Deleting":
-                raise bs.WaitingForBoto3("Waiting for RDS to delete")
+            raise bs.WaitingForBoto3("Waiting for RDS to delete")
 
         ret_dbid = res['DBSnapshot']['DBSnapshotIdentifier']
     logger.info(res)

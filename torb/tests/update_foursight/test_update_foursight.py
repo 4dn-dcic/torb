@@ -1,4 +1,4 @@
-from torb.update_foursight import service
+from ...update_foursight import service
 import pytest
 import mock
 from dcicutils.beanstalk_utils import create_foursight_auto
@@ -24,11 +24,12 @@ def bs_json():
 @mock.patch('dcicutils.beanstalk_utils.get_es_from_bs_config', return_value='fake_es_url')
 @mock.patch('dcicutils.beanstalk_utils.create_foursight')
 def test_create_foursight_auto_prod(mock_fs, mock_es, mock_bs, bs_prod_json):
-    expected = {'bs_url': 'https://data.4dnucleome.org',
-                'dest_env': 'fourfront-webprod',
-                'es_url': 'fake_es_url',
-                'fs_url': 'data'
-                }
+    expected = {
+        'bs_url': 'https://data.4dnucleome.org',
+        'dest_env': 'fourfront-webprod',
+        'es_url': 'fake_es_url',
+        'fs_url': 'data'
+    }
 
     create_foursight_auto(bs_prod_json['dest_env'])
     mock_bs.assert_called_once()
@@ -40,11 +41,12 @@ def test_create_foursight_auto_prod(mock_fs, mock_es, mock_bs, bs_prod_json):
 @mock.patch('dcicutils.beanstalk_utils.get_es_from_bs_config', return_value='fake_es_url')
 @mock.patch('dcicutils.beanstalk_utils.create_foursight')
 def test_create_foursight_auto_staging_env(mock_fs, mock_es, mock_bs, bs_prod_json):
-    expected = {'bs_url': 'http://staging.4dnucleome.org',
-                'dest_env': 'fourfront-webprod',
-                'es_url': 'fake_es_url',
-                'fs_url': 'staging'
-                }
+    expected = {
+        'bs_url': 'http://staging.4dnucleome.org',
+        'dest_env': 'fourfront-webprod',
+        'es_url': 'fake_es_url',
+        'fs_url': 'staging'
+    }
 
     create_foursight_auto(bs_prod_json['dest_env'])
     mock_bs.assert_called_once()
@@ -57,11 +59,12 @@ def test_create_foursight_auto_staging_env(mock_fs, mock_es, mock_bs, bs_prod_js
 @mock.patch('dcicutils.beanstalk_utils.get_es_from_bs_config', return_value='fake_es_url')
 @mock.patch('dcicutils.beanstalk_utils.create_foursight')
 def test_create_foursight_auto_with_dev_env(mock_fs, mock_es, mock_bs, bs_json):
-    expected = {'bs_url': 'fourfront-mastertest.9wzadzju3p.us-east-1.elasticbeanstalk.com',
-                'dest_env': 'fourfront-mastertest',
-                'es_url': 'fake_es_url',
-                'fs_url': 'fourfront-mastertest'
-                }
+    expected = {
+        'bs_url': 'fourfront-mastertest.9wzadzju3p.us-east-1.elasticbeanstalk.com',
+        'dest_env': 'fourfront-mastertest',
+        'es_url': 'fake_es_url',
+        'fs_url': 'fourfront-mastertest'
+    }
 
     service.handler(bs_json, 0)
     mock_bs.assert_called_once()

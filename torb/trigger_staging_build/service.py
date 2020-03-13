@@ -52,18 +52,18 @@ def make_input(event):
     See: torb/create_beanstalk/service.py for more details
     """
     data = {
-      "source_env": event['source_env'],
-      "dest_env": event['dest_env'],
-      "dry_run": False,
-      "merge_into": "production",
-      "repo_owner": "4dn-dcic",
-      "repo_name": "fourfront",
-      "branch": "master",
-      "large_bs": True,
-      "load_prod": True,
-      "_foursight": {
-          "check": "staging/staging_deployment",
-          "log_desc": "Staging Deployment for %s" % event['start_time'],
-       }
+        "source_env": event['source_env'],
+        "dest_env": event['dest_env'],
+        "dry_run": False,
+        "merge_into": "production",
+        "repo_owner": "4dn-dcic",
+        "repo_name": "fourfront",
+        "branch": "master",
+        "large_bs": True,
+        "load_prod": True,
+        "_foursight": {
+            "check": "staging/staging_deployment",
+            "log_desc": "Staging Deployment for %s" % event['start_time'],
+        }
     }
     return json.dumps(data)

@@ -1,14 +1,16 @@
 from dcicutils import beanstalk_utils as bs
-from torb.waitfor.service import handler as waitfor
+from ..waitfor.service import handler as waitfor
 import pytest
 
 
 @pytest.fixture
 def fs_event():
-    return {"_foursight": {"check": "staging/staging_deployment",
-                           "log_desc": "test staging build"
-                           }
-            }
+    return {
+        "_foursight": {
+            "check": "staging/staging_deployment",
+            "log_desc": "test staging build"
+        }
+    }
 
 
 @pytest.fixture
@@ -27,7 +29,6 @@ def waitfor_json():
           "check": "webprod/staging_deployment",
           "log_desc": "Staging Deployment",
        }
-
     }
 
 

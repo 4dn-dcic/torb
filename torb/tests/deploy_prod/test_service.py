@@ -1,4 +1,4 @@
-from torb.travis_deploy.service import handler as deploy_prod_handler
+from ...travis_deploy.service import handler as deploy_prod_handler
 import pytest
 import os
 
