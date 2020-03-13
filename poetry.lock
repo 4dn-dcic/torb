@@ -37,10 +37,10 @@ description = "The AWS SDK for Python"
 name = "boto3"
 optional = false
 python-versions = "*"
-version = "1.12.19"
+version = "1.12.20"
 
 [package.dependencies]
-botocore = ">=1.15.19,<1.16.0"
+botocore = ">=1.15.20,<1.16.0"
 jmespath = ">=0.7.1,<1.0.0"
 s3transfer = ">=0.3.0,<0.4.0"
 
@@ -50,7 +50,7 @@ description = "Low-level, data-driven core of boto 3."
 name = "botocore"
 optional = false
 python-versions = "*"
-version = "1.15.19"
+version = "1.15.20"
 
 [package.dependencies]
 docutils = ">=0.10,<0.16"
@@ -329,7 +329,7 @@ description = "A forked version of python-lambda for 4DN-DCIC use in packaging a
 name = "python-lambda-4dn"
 optional = false
 python-versions = ">=3.6,<3.7"
-version = "2.0.0b1"
+version = "2.0.0b2"
 
 [package.dependencies]
 boto3 = ">=1.10.7,<2"
@@ -426,7 +426,7 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "61532922385c8cc14930a16191121d9e5cc8c6965386090f3dfca7819bd974c0"
+content-hash = "2a4962d3dbf4a4326f9d83bb8109fc4413d1860263cf7e2852c9b371ae629281"
 python-versions = ">=3.6,<3.7"
 
 [metadata.files]
@@ -442,12 +442,12 @@ aws-requests-auth = [
     {file = "aws-requests-auth-0.4.2.tar.gz", hash = "sha256:112c85fe938a01e28f7e1a87168615b6977b28596362b1dcbafbf4f2cc69f720"},
 ]
 boto3 = [
-    {file = "boto3-1.12.19-py2.py3-none-any.whl", hash = "sha256:6a45d2b777821b9b4b69656f628b498b86f6906c6643eca7759c660b26eb541e"},
-    {file = "boto3-1.12.19.tar.gz", hash = "sha256:5cfe1e609af34e1641402e016047e2d12452992b52dccd3e5caea0990f225dc3"},
+    {file = "boto3-1.12.20-py2.py3-none-any.whl", hash = "sha256:918c2e2153d96a5ae30c27ff8bfe2d5f5fc48ce0e62c766236c78a4f5aaff931"},
+    {file = "boto3-1.12.20.tar.gz", hash = "sha256:8804cd39b53ac2add31db3f8617548ce25d373dba179ba7f6d505861fd506042"},
 ]
 botocore = [
-    {file = "botocore-1.15.19-py2.py3-none-any.whl", hash = "sha256:914059286a560ccca6c5c9fa7edd8de8533176090230676193a2e3fbcf214a9e"},
-    {file = "botocore-1.15.19.tar.gz", hash = "sha256:19c11d11aa4f5eee6a21aef85d311dd758dc6df59306e72176c980c3259db71f"},
+    {file = "botocore-1.15.20-py2.py3-none-any.whl", hash = "sha256:babe0e84fc8ba1d8b349acf2cd98d5b15d8974912d393ad149ff2b385097a062"},
+    {file = "botocore-1.15.20.tar.gz", hash = "sha256:4aabdfb65e1f3eb6d35fe5d921a9b6fd2880ea0ec39ad874af762192b6c40825"},
 ]
 certifi = [
     {file = "certifi-2019.11.28-py2.py3-none-any.whl", hash = "sha256:017c25db2a153ce562900032d5bc68e9f191e44e9a0f762f373977de9df1fbb3"},
@@ -577,8 +577,8 @@ python-dateutil = [
     {file = "python_dateutil-2.8.1-py2.py3-none-any.whl", hash = "sha256:75bb3f31ea686f1197762692a9ee6a7550b59fc6ca3a1f4b5d7e32fb98e2da2a"},
 ]
 python-lambda-4dn = [
-    {file = "python-lambda-4dn-2.0.0b1.tar.gz", hash = "sha256:d56eedeb5630ed1dbe7cb97888762b603142c93d799939d70782580171c1cff6"},
-    {file = "python_lambda_4dn-2.0.0b1-py3-none-any.whl", hash = "sha256:3351e9af11c2ed8e0510f9b9f9039887a4585dfa21d753eee0f364594a1fb56a"},
+    {file = "python-lambda-4dn-2.0.0b2.tar.gz", hash = "sha256:d94e3f3e7195638a29335f4ed8775e69f3927aa79feb935bd8371b4eda83282c"},
+    {file = "python_lambda_4dn-2.0.0b2-py3-none-any.whl", hash = "sha256:415b847e88f8797406ab5957f57ed3cfcc50e64e1f2434ec5eb84b1d7c89bce8"},
 ]
 pyyaml = [
     {file = "PyYAML-5.2-cp27-cp27m-win32.whl", hash = "sha256:35ace9b4147848cafac3db142795ee42deebe9d0dad885ce643928e88daebdcc"},

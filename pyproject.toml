@@ -23,7 +23,7 @@ classifiers = [
 "python" = ">=3.6,<3.7"
 "dcicutils" = ">=0.8.1"
 "PyYAML" = ">=5.1,<5.3"
-"python-lambda-4dn" = "2.0.0b1"
+"python-lambda-4dn" = "2.0.0b2"
 # Build tasks
 "invoke" = ">=0.18.1,<1"
 # Syntax checking
