@@ -21,7 +21,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 "python" = ">=3.6,<3.7"
-"dcicutils" = ">=0.8.1"
+"dcicutils" = ">=0.13.2"
 "PyYAML" = ">=5.1,<5.3"
 "python-lambda-4dn" = "2.0.0b2"
 # Build tasks
