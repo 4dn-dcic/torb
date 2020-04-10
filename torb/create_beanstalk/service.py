@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from dcicutils import beanstalk_utils as bs
+from dcicutils.env_utils import is_stg_or_prd_env
 from ..utils import powerup, get_default
 from six import string_types
 
@@ -68,7 +69,7 @@ def handler(event, context):
 
     # overwrite db_endpoint potentially if working with staging/data
     # specifically, if using the ff_deploy_staging workflow, this code is hit
-    if 'webprod' in source_env and 'webprod' in dest_env:
+    if is_stg_or_prd_env(source_env) and is_stg_or_prd_env(dest_env):
         if not db_endpoint:
             db_endpoint = bs.GOLDEN_DB
         # determine fs_url
