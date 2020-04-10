@@ -71,6 +71,7 @@ class InconsistentEnvironments(Exception):
         self.source_env = source_env
         self.dest_env = dest_env
 
+
 def infer_repo_from_env(event):
     source_env = event['source_env']
     dest_env = event['dest_env']
