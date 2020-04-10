@@ -64,7 +64,7 @@ def test_powerup_logs_to_foursight(waitfor_json):
 def test_wait_for_travis():
     input_json = {
             "dry_run": False,
-            "id": 312587257,
+            "id": 312587257,  # This 'id' needs a better explanatory comment. -kmp 10-Apr-2020
             "type": "travis",
     }
     print(input_json)

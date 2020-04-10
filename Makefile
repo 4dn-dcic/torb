@@ -1,9 +1,6 @@
 help:
-	@echo "clean - remove all build, test, coverage and Python artifacts"
-	@echo "lint - check style with flake8"
-	@echo "release - package and upload a release"
-	@echo "install - install the package in the current virtual environment (or global default environment)"
-	@echo "full-install - install the package in a fresh virtual environment"
+	@make info
+
 
 clean: clean-build clean-pyc clean-merge clean-env
 
@@ -44,3 +41,12 @@ torb_env:
 
 test: torb_env
 	source torb_env/bin/activate && pytest
+
+info:
+	@: $(info Here are some suggestions:)
+	@echo "- Use 'make clean' to remove all build, test, coverage and Python artifacts."
+	@echo "- Use 'make lint' to check style with flake8."
+	@echo "- Use 'make release' to package and upload a release."
+	@echo "- Use 'make install' to install the package in the current virtual environment (or global default environment)."
+	@echo "- Use 'make full-install' to install the package in a fresh virtual environment."
+	@echo "- Use 'make test' to run tests."
