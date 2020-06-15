@@ -78,7 +78,7 @@ celerybeat-schedule
 .env
 
 # virtualenv
-venv/
+*env/
 ENV/
 
 # Spyder project settings
@@ -97,3 +97,9 @@ logs/
 .chalice/
 
 notebooks/Single use scripts/Jsons/*
+
+# PyCharm
+.idea/
+
+# Emacs
+*~

@@ -3,7 +3,7 @@ import requests
 import os
 import logging
 import json
-from torb.utils import (
+from ..utils import (
     powerup,
     get_travis_config,
     get_default
@@ -56,8 +56,9 @@ def handler(event, context):
             "message": "travis-deploy: Torb triggered build to %s has started" % dest_env,
             "branch": branch,
             "config": {
-                "before_install": ["export tibanna_deploy=%s" % (dest_env)] +
-                get_travis_config(branch, repo_name, repo_owner).get('before_install', [])
+                "before_install": (
+                    ["export tibanna_deploy=%s" % (dest_env)]
+                    + get_travis_config(branch, repo_name, repo_owner).get('before_install', []))
             }
         }
     }

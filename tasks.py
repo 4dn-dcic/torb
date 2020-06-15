@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
-import os
-import errno
-import sys
-import webbrowser
-from invoke import task, run
+import aws_lambda
 import contextlib
+import errno
+import os
 import shutil
+import sys
 import time
+import webbrowser
+
 # from botocore.errorfactory import ExecutionAlreadyExists
 from contextlib import contextmanager
-import aws_lambda
 from dcicutils import beanstalk_utils as bs
+from invoke import task, run
+
 
 docs_dir = 'docs'
 build_dir = os.path.join(docs_dir, '_build')
@@ -213,26 +215,31 @@ def update_version(ctx, version=None):
     CURRENTLY NOT USED
     Would be used to update _version.py if we decide to package torb
     """
-    from torb._version import __version__
-    print("Current version is ", __version__)
-    if version is None:
-        version = input("What version would you like to set for new release (please use x.x.x / "
-                        " semantic versioning): ")
-
-    # read the versions file
-    lines = []
-    with open("wranglertools/_version.py") as readfile:
-        lines = readfile.readlines()
-
-    if lines:
-        with open("wranglertools/_version.py", 'w') as writefile:
-            lines[-1] = '__version__ = "%s"\n' % (version.strip())
-            writefile.writelines(lines)
-
-    run("git add wranglertools/_version.py")
-    run("git commit -m 'version bump'")
-    print("version updated to", version)
-    return version
+    raise NotImplementedError('update_version is not implemented')
+# This would need to be rewritten for poetry, but it also makes assumption that it's part of wrangler_tools,
+# so the filenames here wouldn't work either. Also, _version.py is gone, but version is gettable from
+# pkg_resources. -kmp 12-Mar-2020
+#
+#     from .torb._version import __version__
+#     print("Current version is ", __version__)
+#     if version is None:
+#         version = input("What version would you like to set for new release (please use x.x.x / "
+#                         " semantic versioning): ")
+#
+#     # read the versions file
+#     lines = []
+#     with open("wranglertools/_version.py") as readfile:
+#         lines = readfile.readlines()
+#
+#     if lines:
+#         with open("wranglertools/_version.py", 'w') as writefile:
+#             lines[-1] = '__version__ = "%s"\n' % (version.strip())
+#             writefile.writelines(lines)
+#
+#     run("git add wranglertools/_version.py")
+#     run("git commit -m 'version bump'")
+#     print("version updated to", version)
+#     return version
 
 
 @task
@@ -289,13 +296,18 @@ def publish(ctx, test=False):
     NOT CURRENTLY USED
     Publish this package to pypi.
     """
-    clean(ctx)
-    if test:
-        run('python setup.py register -r test sdist bdist_wheel', echo=True)
-        run('twine upload dist/* -r test', echo=True)
-    else:
-        run('python setup.py register sdist bdist_wheel', echo=True)
-        run('twine upload dist/*', echo=True)
+    raise NotImplementedError('pubish is not implemented')
+# We'd want to use 'poetry publish' here if this alleged to be used.
+# Since it's unused (or the comment is wrong), I disabled it. See the Makefile.
+# -kmp 12-Mar-2020
+#
+#     clean(ctx)
+#     if test:
+#         run('python setup.py register -r test sdist bdist_wheel', echo=True)
+#         run('twine upload dist/* -r test', echo=True)
+#     else:
+#         run('python setup.py register sdist bdist_wheel', echo=True)
+#         run('twine upload dist/*', echo=True)
 
 
 @task
@@ -304,11 +316,12 @@ def travis(ctx, branch='production', owner='4dn-dcic', repo_name='fourfront'):
     import logging
     logging.basicConfig()
 
-    from torb.travis_deploy.service import handler as travis
-    data = {'branch': branch,
-            'repo_owner': owner,
-            'repo_name': repo_name
-            }
+    from .torb.travis_deploy.service import handler as travis
+    data = {
+        'branch': branch,
+        'repo_owner': owner,
+        'repo_name': repo_name,
+    }
     travis(data, None)
     # print("https://travis-ci.org/%s" % res.json()['repository']['slug'])
 
@@ -335,7 +348,7 @@ def deploy_workflow(ctx):
     Deploy a Torb step function by name
     See https://github.com/4dn-dcic/tibanna/blob/master/core/utils.py#L317
     """
-    raise NotImplementedError
+    raise NotImplementedError('deploy_workflow is not implemented')
 
 
 @task
@@ -352,4 +365,4 @@ def run_workflow(ctx):
     #     name=run_name,
     #     input=make_input(event),
     # )
-    raise NotImplementedError
+    raise NotImplementedError('run_workflow is not implemented.')
