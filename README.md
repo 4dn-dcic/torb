@@ -54,7 +54,7 @@ Lambda function name: `trigger-staging-build`. [Link](./torb/trigger_staging_bui
 
 Workflows: triggers `ff_deploy_staging`
 
-Use `dcicutils.beanstalk_utils.whodaman` to determine which environments are data and staging, and kick off the `ff_deploy_staging` step function to make a fresh deploy to staging using Fourfront master. No information is needed from the lambda event JSON.
+Use `dcicutils.beanstalk_utils.compute_ff_prd_env` to determine which environments are data and staging, and kick off the `ff_deploy_staging` step function to make a fresh deploy to staging using Fourfront master. No information is needed from the lambda event JSON.
 
 ### trigger_webdev_build
 Lambda function name: `trigger-webdev-build`. [Link](./torb/trigger_webdev_build/).

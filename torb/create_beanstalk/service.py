@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import dcicutils.base
 import logging
 from dcicutils import beanstalk_utils as bs
 from torb.utils import powerup, get_default
@@ -70,10 +71,10 @@ def handler(event, context):
     # specifically, if using the ff_deploy_staging workflow, this code is hit
     if 'webprod' in source_env and 'webprod' in dest_env:
         if not db_endpoint:
-            db_endpoint = bs.GOLDEN_DB
+            db_endpoint = dcicutils.base._FF_GOLDEN_DB
         # determine fs_url
         fs_url = 'staging'
-        if dest_env == bs.whodaman():
+        if dest_env == bs.compute_ff_prd_env():
             fs_url = 'data'
 
     retval = {

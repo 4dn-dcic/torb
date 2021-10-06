@@ -12,11 +12,11 @@ def handler(event, context):
     '''
     Kick off the ff_deploy_staging step function, which will trigger a staging
     deployment. The ElasticBeanstalk environments for data and staging are
-    determined using beanstalk_utils.whodaman, which requires ElasticBeanstalk
+    determined using beanstalk_utils.compute_ff_prd_env, which requires ElasticBeanstalk
     IAM permissions
     '''
     # determine if we are deploying to fourfront-webprod or fourfront-webprod2
-    event['source_env'] = bs.whodaman()
+    event['source_env'] = bs.compute_ff_prd_env()
     if event['source_env'] == 'fourfront-webprod':
         event['dest_env'] = 'fourfront-webprod2'
     elif event['source_env'] == 'fourfront-webprod2':
