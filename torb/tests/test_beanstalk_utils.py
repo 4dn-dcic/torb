@@ -1,14 +1,16 @@
 from dcicutils import beanstalk_utils as bs
-from torb.waitfor.service import handler as waitfor
+from ..waitfor.service import handler as waitfor
 import pytest
 
 
 @pytest.fixture
 def fs_event():
-    return {"_foursight": {"check": "staging/staging_deployment",
-                           "log_desc": "test staging build"
-                           }
-            }
+    return {
+        "_foursight": {
+            "check": "staging/staging_deployment",
+            "log_desc": "test staging build"
+        }
+    }
 
 
 @pytest.fixture
@@ -27,7 +29,6 @@ def waitfor_json():
           "check": "webprod/staging_deployment",
           "log_desc": "Staging Deployment",
        }
-
     }
 
 
@@ -63,7 +64,7 @@ def test_powerup_logs_to_foursight(waitfor_json):
 def test_wait_for_travis():
     input_json = {
             "dry_run": False,
-            "id": 312587257,
+            "id": 312587257,  # This 'id' needs a better explanatory comment. -kmp 10-Apr-2020
             "type": "travis",
     }
     print(input_json)

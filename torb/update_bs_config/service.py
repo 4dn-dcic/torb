@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from dcicutils import beanstalk_utils as bs
-from torb.utils import powerup, get_default
+from ..utils import powerup, get_default
 
 
 logging.basicConfig()

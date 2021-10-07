@@ -1,4 +1,3 @@
-from __future__ import print_function
 import requests
 import yaml
 import os
@@ -22,7 +21,7 @@ def get_travis_config(branch='master', repo='fourfront', gh_user='4dn-dcic', fil
     Pull the travis config YAML from github
     """
     fourfront_travis_yml_url = 'https://raw.githubusercontent.com/{}/{}/{}/{}'.format(gh_user, repo, branch, filename)
-    return yaml.load(requests.get(fourfront_travis_yml_url).content)
+    return yaml.safe_load(requests.get(fourfront_travis_yml_url).content)
 
 
 def kick_travis_build(branch, repo_owner, repo_name, env, travis_key=None):
@@ -43,18 +42,22 @@ def kick_travis_build(branch, repo_owner, repo_name, env, travis_key=None):
             "message": "kick_travis_build: Torb triggered build to %s has started" % env,
             "branch": branch,
             "config": {
-                "before_install": ["export tibanna_deploy=" + env] +
-                get_travis_config(branch, repo_name, repo_owner).get('before_install', [])
+                "before_install":
+                    (
+                        ["export tibanna_deploy=" + env]
+                        + get_travis_config(branch, repo_name, repo_owner).get('before_install', [])
+                    )
             }
         }
     }
 
-    headers = {'Content-Type': 'application/json',
-               'Accept': 'application/json',
-               'Travis-API-Version': '3',
-               'User-Agent': 'tibanna/0.1.0',
-               'Authorization': 'token %s' % travis_key
-               }
+    headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Travis-API-Version': '3',
+        'User-Agent': 'tibanna/0.1.0',
+        'Authorization': 'token %s' % travis_key
+    }
 
     url = 'https://api.travis-ci.org/repo/%s%s%s/requests' % (repo_owner, '%2F', repo_name)
 
@@ -64,7 +67,7 @@ def kick_travis_build(branch, repo_owner, repo_name, env, travis_key=None):
         logger.info(resp)
         logger.info(resp.text)
         logger.info(resp.json())
-    except:
+    except Exception:
         pass
 
     return resp
@@ -80,7 +83,6 @@ def powerup(lambda_name):
     for lambas that are used within step functions.
     '''
     def decorator(function):
-        import logging
         logging.basicConfig()
         logger = logging.getLogger('logger')
 

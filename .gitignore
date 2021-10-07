@@ -100,3 +100,6 @@ notebooks/Single use scripts/Jsons/*
 
 # PyCharm
 .idea/
+
+# Emacs
+*~

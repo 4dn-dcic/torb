@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import logging
-from torb.utils import kick_travis_build, get_default
+from ..utils import kick_travis_build, get_default
 
 
 logger = logging.getLogger()

@@ -2,7 +2,7 @@
 import logging
 from dcicutils import beanstalk_utils as bs
 from dcicutils.beanstalk_utils import WaitingForBoto3
-from torb.utils import powerup, get_default
+from ..utils import powerup, get_default
 
 
 logging.basicConfig()
@@ -51,10 +51,10 @@ def handler(event, context):
 
     if dry_run:
         try:
-            logger.warn("Dry Run - would have called %s : %s with %s"
-                        % (checkers[boto3_type], boto3_type, item_id))
-        except:
-            logger.warn("Dry Run, but boto3_type not in checkers")
+            logger.warning("Dry Run - would have called %s : %s with %s"
+                           % (checkers[boto3_type], boto3_type, item_id))
+        except Exception:
+            logger.warning("Dry Run, but boto3_type not in checkers")
         status = True
         event["waitfor_details"] = "dry_run"
         return event
