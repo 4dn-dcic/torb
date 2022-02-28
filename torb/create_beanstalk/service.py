@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import dcicutils.base
 import logging
 from dcicutils import beanstalk_utils as bs
 from dcicutils.env_utils import is_stg_or_prd_env
@@ -71,10 +72,10 @@ def handler(event, context):
     # specifically, if using the ff_deploy_staging workflow, this code is hit
     if is_stg_or_prd_env(source_env) and is_stg_or_prd_env(dest_env):
         if not db_endpoint:
-            db_endpoint = bs.GOLDEN_DB
+            db_endpoint = dcicutils.base._FF_GOLDEN_DB
         # determine fs_url
         fs_url = 'staging'
-        if dest_env == bs.whodaman():
+        if dest_env == bs.compute_ff_prd_env():
             fs_url = 'data'
 
     retval = {

@@ -29,6 +29,9 @@ lint:
 release: clean
 	poetry publish
 
+build:
+	poetry install
+
 install: clean
 	poetry install
 
@@ -40,7 +43,7 @@ torb_env:
 	if [ ! -e torb_env ]; then virtualenv --python python3.6 torb_env; fi
 
 test: torb_env
-	source torb_env/bin/activate && pytest
+	source torb_env/bin/activate && echo "Disabled for now: Mocks out of date. Fix before reenabling." && exit 1 # pytest
 
 info:
 	@: $(info Here are some suggestions:)
