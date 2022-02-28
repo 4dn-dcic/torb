@@ -1,21 +1,20 @@
 [tool.poetry]
 name = "torb"
-version = "1.0.0b1"
-description = "Torb is a buildbot that uses lambda and aws step functions to run builds."
+version = "1.999"
+description = "Torb is a now-OBSOLETE buildbot that once used lambda and aws step functions to run builds."
 authors = ["4DN-DCIC Team <support@4dnucleome.org>"]
 license = "MIT"
-readme = "README.md"
+readme = "README.rst"
 homepage = "https://github.com/4dn-dcic/torb"
 repository = "https://github.com/4dn-dcic/torb"
 packages = [
   { include="torb", from="." }
 ]
 classifiers = [
+  'Development Status :: 7 - Inactive',  # This repository is OBSOLETE. See README.rst
   'License :: OSI Approved :: MIT License',
   'Operating System :: POSIX :: Linux',
   'Programming Language :: Python',
-  'Programming Language :: Python :: 3.4',
-  'Programming Language :: Python :: 3.5',
   'Programming Language :: Python :: 3.6',
 ]
 

@@ -12,6 +12,9 @@ from dcicutils.beanstalk_utils import log_to_foursight
 logger = logging.getLogger(__name__)
 
 
+raise AssertionError("The 'torb' repository is no longer supported.")
+
+
 def get_default(data, key, default=None):
     return data.get(key, os.environ.get(key, default))
 
