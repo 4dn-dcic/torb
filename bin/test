@@ -1,2 +1,0 @@
-if [ ! -e torb_env ]; then virtualenv --python python3.6 torb_env; fi
-source torb_env/bin/activate && pytest "$@"

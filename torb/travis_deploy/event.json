@@ -1,8 +1,0 @@
-{
-  "dest_env": "fourfront-mastertest",
-  "dry_run": false,
-  "merge_into": "production",
-  "repo_owner": "4dn-dcic",
-  "repo_name": "fourfront",
-  "branch": "master"
-}
