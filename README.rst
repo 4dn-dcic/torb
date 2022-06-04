@@ -2,13 +2,9 @@
 torb
 ====
 
----------------------
+
 Repository Superseded
----------------------
-
-
-Status
-======
+=====================
 
 The entire torb repository has been superseded.
 
